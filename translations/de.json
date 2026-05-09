@@ -1,1 +1,63 @@
+{
+  "config": {
+    "flow_title": "Felicity Solar",
+    "step": {
+      "user": {
+        "title": "Felicity Solar Anmeldung",
+        "description": "Bitte Zugangsdaten eingeben",
+        "data": {
+          "username": "E-Mail",
+          "password": "Passwort",
+          "device_sn": "Seriennummer",
+          "battery_sn": "Batterie-Seriennummer"
+        }
+      }
+    },
+    "error": {
+      "invalid_auth": "Ungültige Zugangsdaten",
+      "cannot_connect": "Verbindung fehlgeschlagen"
+    },
+    "abort": {
+      "already_configured": "Gerät bereits eingerichtet"
+    }
+  },
+  "entity": {
+    "sensor": {
+      "deviceSn": { "name": "Seriennummer" },
+      "deviceModel": { "name": "Gerätemodell" },
+      "deviceType": { "name": "Gerätetyp" },
+      "subType": { "name": "Untertyp" },
+      "status": { "name": "Status" },
+      "firmwareVersion": { "name": "Firmware Version" },
 
+      "energyState": { "name": "Energiezustand" },
+      "workingMode": { "name": "Betriebsmodus" },
+      "alarmCount": { "name": "Alarmanzahl" },
+      "alarmText": { "name": "Alarmtext" },
+
+      "pvTotalPower": { "name": "PV Leistung" },
+      "pv1Power": { "name": "PV String 1" },
+      "pv2Power": { "name": "PV String 2" },
+      "pv3Power": { "name": "PV String 3" },
+      "pv4Power": { "name": "PV String 4" },
+
+      "acTtlInpower": { "name": "Netzleistung" },
+      "grid_import": { "name": "Netzbezug" },
+      "grid_export": { "name": "Netzeinspeisung" },
+
+      "ctPower": { "name": "Hausverbrauch" },
+
+      "emsSoc": { "name": "Batterie Ladezustand" },
+      "emsPower": { "name": "Batterieleistung" },
+      "emsSoh": { "name": "Batterie Gesundheit" },
+      "emsCapacity": { "name": "Batterie Kapazität" },
+
+      "ePvToday": { "name": "PV Energie heute" },
+      "eToday": { "name": "Gesamtenergie heute" },
+      "eGridFeedToday": { "name": "Einspeisung heute" },
+      "eGridInToday": { "name": "Netzbezug heute" },
+      "eBatCharToday": { "name": "Batterie Laden heute" },
+      "eBatDisCharToday": { "name": "Batterie Entladen heute" }
+    }
+  }
+}
