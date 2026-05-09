@@ -1,4 +1,5 @@
 # felicityAPI
+Version 1.0.0
 
 Es ist eine Seriennummererkennung eingebaut, soll laut ChatGPT auch funktionieren, ein Test den ich durchführen sollte, war erfolgreich. Es ist es als Fallbackoption aber noch als optionale Eingabe beim Setup mit dabei, also bitte nicht wundern. Es werden im Moment 2 feste Geräte, Inverter und Batterie erzeugt, so wie das auch in der App ist. Eine flexible Geräteerkennung ist die nächste geplante Erweiterung. 
 Aber trotzdem viel Spaß beim Testen. 
