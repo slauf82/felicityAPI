@@ -5,3 +5,11 @@ Es ist eine Seriennummererkennung eingebaut, soll laut ChatGPT auch funktioniere
 Aber trotzdem viel Spaß beim Testen. 
 
 Ich habe mich für die wichtigsten Sensoren für Inverter (25) und Batterie (18) entschieden. Die API liefert über 600 mögliche Sensoren, wovon über 200 mit Werten gefüllt sind. Ich werde mir noch was einfallen lassen, wie ich die gefüllten Sensoren alle sichtbar machen kann, ohne euch mit Sensoren zu überfluten und zu nerven. Entweder als separates Gerät oder irgendwie abgetrennt vom Rest in einer Art extra Gruppe. Aber das muss ich noch mit ChatGPT erkunden. Diese Erweiterung wurde auch komplett mit Hilfe von ChatGPT erstellt. Aber keine Sorge, das ist so sehr getestet, dass es sehr flexibel erweiterbar ist und zudem hat mir ChatGPT bescheinigt, dass es etwa auf Herstellerniveau von der Qualität her schon ist.
+
+Manual Installation :
+Download the latest release
+into
+config/custom_components/
+Restart Home Assistant
+Add the integration from Devices & services
+Search for "Felicity Solar" and add it.
