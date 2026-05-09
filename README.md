@@ -20,3 +20,33 @@ Manuelle Installation :
 4. Suche dabei nach Felicity API und akzeptiere
 
 Es wird nach Benutzername und Kennwort gefragt (dieselben Zugangsdaten wie in der FSolar App angeben) ! Die Seriennummern für Wechselrichter und Batterie kann angegeben werden, ist aber optional.
+
+Mein weiterer Entwicklungsfahrplan :
+
+Zielbild 8,5+/10:
+
+1. Stabiler Core
+* API-Klasse sauber
+* SSL bewusst dokumentiert
+* Token/Login sauber gekapselt
+* Fehlerfälle sauber behandeln
+2. Dynamische Geräte
+* beliebig viele Geräte aus list_device_all_type
+* Sensoren je deviceType
+* keine fest verdrahteten inverter/battery-Keys mehr
+3. Saubere Sensor-Architektur
+* Sensor-Definitionen getrennt nach Gerätetyp
+* Mapping-Tabellen statt langer if/Fallback-Blöcke
+* klare Unit/device_class/state_class
+4. Setup/Options sauber
+* Seriennummern optional
+* Scan-Intervall optional
+* SSL-Modus optional
+* Diagnose-/Debugmodus optional
+5. HACS-tauglich
+* manifest.json
+* hacs.json
+* README
+* Changelog
+* Versionierung
+* saubere Übersetzungen (aber die sind schon jetzt gut !)
