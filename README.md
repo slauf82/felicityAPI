@@ -12,4 +12,4 @@ into
 config/custom_components/
 Restart Home Assistant
 Add the integration from Devices & services
-Search for "Felicity Solar" and add it.
+Search for "Felicity API" and add it.
