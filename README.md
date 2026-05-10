@@ -1,52 +1,170 @@
-# felicityAPI
-Version 1.0.0
+# Felicity API for Home Assistant
+Version 1.1.0
 
-Es werden im Moment 2 feste Geräte, Inverter und Batterie erzeugt, so wie das auch in der App ist. Eine flexible Geräteerkennung ist die nächste geplante Erweiterung. Ich habe mich für die wichtigsten Sensoren für Inverter (25) und Batterie (18) entschieden. Die API liefert über 600 mögliche Sensoren, wovon über 200 mit Werten gefüllt sind. Ich werde mir noch was einfallen lassen, wie ich die gefüllten Sensoren alle sichtbar machen kann, ohne euch mit Sensoren zu überfluten und zu nerven. Entweder als separates Gerät oder irgendwie abgetrennt vom Rest in einer Art extra Gruppe. Aber das muss ich noch mit ChatGPT erkunden. Diese Erweiterung wurde auch komplett mit Hilfe von ChatGPT erstellt. Aber keine Sorge, das ist so sehr getestet, dass es sehr flexibel erweiterbar ist und zudem hat mir ChatGPT bescheinigt, dass es etwa auf der Stufe solide Hobby-/Custom-Integration, ca. 6,5 bis 7 von 10 ist. Aber das wird jetzt Schritt für Schritt ausgebaut und verbessert, Ziel ist, mindestens auf Herstellerniveau (mindestens ca. 8,5) zu kommen.
+Custom Home Assistant integration for Felicity Solar cloud devices.
 
-Viel Spaß beim Testen !
+This integration connects directly to the official Felicity Solar cloud API and provides sensor data for:
 
-Manual Installation : 
-1. Download the latest release into config/custom_components/felicityAPI
-2. Restart Home Assistant
-3. Add the integration from Devices & services
-4. Search for "Felicity API" and add it.
+- Inverters
+- Batteries
+- Energy statistics
+- PV production
+- Grid import/export
+- Battery charging/discharging
+- Device status and diagnostics
 
-You are asked about username and password (use the same data as you entered in the FSolar App) ! The serial numbers of inverter and battery can be entered, but are optional.
+---
 
-Manuelle Installation :
-1. Download die neueste Version nach config/custom_components/felicityAPI
-2. Home Assistant neu starten
-3. Füge die Integration über Geräte & Dienste hinzu
-4. Suche dabei nach Felicity API und akzeptiere
+# Current Project Status
 
-Es wird nach Benutzername und Kennwort gefragt (dieselben Zugangsdaten wie in der FSolar App angeben) ! Die Seriennummern für Wechselrichter und Batterie kann angegeben werden, ist aber optional.
+Early beta / active development.
 
-Mein weiterer Entwicklungsfahrplan :
+The integration is already stable enough for daily use, but the internal architecture is still being improved and refactored.
 
-Zielbild 8,5+/10:
+## Currently Working
 
-1. Stabiler Core
-* API-Klasse sauber
-* SSL bewusst dokumentiert
-* Token/Login sauber gekapselt
-* Fehlerfälle sauber behandeln
-2. Dynamische Geräte
-* beliebig viele Geräte aus list_device_all_type
-* Sensoren je deviceType
-* keine fest verdrahteten inverter/battery-Keys mehr
-3. Saubere Sensor-Architektur
-* Sensor-Definitionen getrennt nach Gerätetyp
-* Mapping-Tabellen statt langer if/Fallback-Blöcke
-* klare Unit/device_class/state_class
-4. Setup/Options sauber
-* Seriennummern optional
-* Scan-Intervall optional
-* SSL-Modus optional
-* Diagnose-/Debugmodus optional
-5. HACS-tauglich
-* manifest.json
-* hacs.json
-* README
-* Changelog
-* Versionierung
-* saubere Übersetzungen (aber die sind schon jetzt gut !)
+- Inverter detection
+- Battery detection
+- Automatic device discovery
+- Optional manual serial number fallback
+- Device separation inside Home Assistant
+- PV power sensors
+- Grid power sensors
+- Battery SOC and battery power
+- Daily energy statistics
+- HotJson parsing
+- Config Flow setup
+- SSL handling workaround
+- Home Assistant device registry support
+
+## Currently In Progress
+
+- Dynamic multi-device architecture
+- Coordinator refactoring
+- Improved sensor abstraction
+- Better diagnostics
+- HACS preparation
+- Options flow
+- Cleanup and optimization
+
+---
+
+# Features
+
+## Device Support
+
+### Inverter Sensors
+
+- PV total power
+- PV string power
+- Grid import/export
+- Daily PV production
+- Daily grid import
+- Daily grid export
+- Battery charging/discharging
+- Firmware version
+- Device status
+- Working mode
+- Energy state
+
+### Battery Sensors
+
+- Battery SOC
+- Battery power
+- Battery voltage
+- Battery current
+- Battery SOH
+- Battery capacity
+- Daily charge/discharge energy
+
+---
+
+# Installation
+
+## Manual Installation
+
+Copy the integration folder to:
+
+/config/custom_components/felicity_api/
+
+Restart Home Assistant afterwards.
+
+Configuration
+
+The integration supports:
+
+Username
+Password
+Optional inverter serial number
+Optional battery serial number
+
+Important
+Serial numbers are optional.
+
+The integration first tries automatic device discovery using the Felicity API device list.
+
+Manual serial numbers are only used as fallback.
+
+SSL Information
+
+Felicity currently uses SSL certificates that may fail strict validation inside Home Assistant environments.
+
+Because of this, the integration currently uses a relaxed SSL context intentionally.
+
+This is a temporary compatibility solution until Felicity improves certificate compatibility.
+
+Architecture
+
+The integration is currently transitioning from a fixed two-device structure to a fully dynamic multi-device architecture.
+
+Current internal structure:
+
+centralized API layer
+centralized request handling
+centralized authentication handling
+centralized SSL handling
+coordinator-based device management
+Development Goals
+Planned Improvements
+Fully dynamic device handling
+Multiple inverter support
+Multiple battery support
+Better diagnostics
+Cleaner sensor abstraction
+Entity categories
+Device controls
+Realtime/WebSocket support (if possible)
+HACS release
+Translation improvements
+Repair flow support
+Known Limitations
+Some Felicity API fields are undocumented
+API structures may differ between firmware generations
+SSL validation currently relaxed intentionally
+Some sensors still rely on fallback mappings
+Requirements
+
+The integration currently requires:
+
+"requirements": [
+  "pycryptodomex"
+]
+Home Assistant Compatibility
+
+Tested with recent Home Assistant versions including:
+
+2025.x
+2026.x
+Disclaimer
+
+This project is not affiliated with or endorsed by Felicity Solar.
+
+Use at your own risk.
+
+Credits
+Felicity Solar cloud platform
+Home Assistant community
+Reverse engineering and testing by the community
+
+License
+GNU General Public License v3.0 (GPL-3.0)
