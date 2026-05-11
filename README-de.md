@@ -104,7 +104,7 @@ Die Integration versucht zuerst eine automatische Geräteerkennung über die Fel
 
 Manuelle Seriennummern dienen nur als Fallback.
 
-SSL-Hinweis
+* SSL-Hinweis
 
 Felicity verwendet aktuell SSL-Zertifikate, die innerhalb mancher Home-Assistant-Umgebungen keine vollständige Zertifikatsvalidierung ermöglichen.
 
