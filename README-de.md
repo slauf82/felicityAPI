@@ -92,10 +92,10 @@ Konfiguration
 
 Die Integration unterstützt:
 
-Benutzername
-Passwort
-Optionale Wechselrichter-Seriennummer
-Optionale Batterie-Seriennummer
+* Benutzername
+* Passwort
+* Optionale Wechselrichter-Seriennummer
+* Optionale Batterie-Seriennummer
 
 Wichtig
 Seriennummern sind optional.
