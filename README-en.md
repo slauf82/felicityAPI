@@ -93,10 +93,10 @@ Configuration
 
 The integration supports:
 
-Username
-Password
-Optional inverter serial number
-Optional battery serial number
+* Username
+* Password
+* Optional inverter serial number
+* Optional battery serial number
 
 Important
 Serial numbers are optional.
