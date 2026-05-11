@@ -118,29 +118,31 @@ Die Integration befindet sich aktuell im Übergang von einer festen Zwei-Geräte
 
 Der aktuelle interne Aufbau umfasst:
 
-zentrale API-Schicht
-zentrale Request-Verarbeitung
-zentrale Authentifizierungsverwaltung
-zentrale SSL-Verwaltung
-Coordinator-basierte Geräteverwaltung
-Entwicklungsziele
+* zentrale API-Schicht
+* zentrale Request-Verarbeitung
+* zentrale Authentifizierungsverwaltung
+* zentrale SSL-Verwaltung
+* Coordinator-basierte Geräteverwaltung
+# Entwicklungsziele
 Geplante Verbesserungen
-Vollständig dynamische Geräteverwaltung
-Unterstützung mehrerer Wechselrichter
-Unterstützung mehrerer Batterien
-Erweiterte Diagnosefunktionen
-Sauberere Sensor-Abstraktion
-Entity-Kategorien
-Gerätesteuerungen
-Echtzeit-/WebSocket-Unterstützung (falls möglich)
-HACS-Release
-Verbesserte Übersetzungen
-Repair-Flow-Unterstützung
-Bekannte Einschränkungen
-Einige Felicity API-Felder sind undokumentiert
-API-Strukturen können sich je nach Firmware-Generation unterscheiden
-SSL-Validierung ist aktuell bewusst gelockert
-Einige Sensoren verwenden derzeit noch Fallback-Mappings
+* Vollständig dynamische Geräteverwaltung
+* Unterstützung mehrerer Wechselrichter
+* Unterstützung mehrerer Batterien
+* Erweiterte Diagnosefunktionen
+* Sauberere Sensor-Abstraktion
+* Entity-Kategorien
+* Gerätesteuerungen
+* Echtzeit-/WebSocket-Unterstützung (falls möglich)
+* HACS-Release
+* Verbesserte Übersetzungen
+* Repair-Flow-Unterstützung
+# Bekannte Einschränkungen
+* Einige Felicity API-Felder sind undokumentiert
+* API-Strukturen können sich je nach Firmware-Generation unterscheiden
+* SSL-Validierung ist aktuell bewusst gelockert
+* Einige Sensoren verwenden derzeit noch Fallback-Mappings
+
+
 Anforderungen
 
 Die Integration benötigt aktuell:
