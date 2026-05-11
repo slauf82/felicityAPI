@@ -119,29 +119,30 @@ The integration is currently transitioning from a fixed two-device structure to 
 
 Current internal structure:
 
-centralized API layer
-centralized request handling
-centralized authentication handling
-centralized SSL handling
-coordinator-based device management
-Development Goals
+* centralized API layer
+* centralized request handling
+* centralized authentication handling
+* centralized SSL handling
+* coordinator-based device management
+# Development Goals
 Planned Improvements
-Fully dynamic device handling
-Multiple inverter support
-Multiple battery support
-Better diagnostics
-Cleaner sensor abstraction
-Entity categories
-Device controls
-Realtime/WebSocket support (if possible)
-HACS release
-Translation improvements
-Repair flow support
-Known Limitations
-Some Felicity API fields are undocumented
-API structures may differ between firmware generations
-SSL validation currently relaxed intentionally
-Some sensors still rely on fallback mappings
+* Fully dynamic device handling
+* Multiple inverter support
+* Multiple battery support
+* Better diagnostics
+* Cleaner sensor abstraction
+* Entity categories
+* Device controls
+* Realtime/WebSocket support (if possible)
+* HACS release
+* Translation improvements
+* Repair flow support
+# Known Limitations
+* Some Felicity API fields are undocumented
+* API structures may differ between firmware generations
+* SSL validation currently relaxed intentionally
+* Some sensors still rely on fallback mappings
+
 Requirements
 
 The integration currently requires:
