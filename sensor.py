@@ -17,7 +17,7 @@ from homeassistant.const import (
 )
 from homeassistant.helpers.update_coordinator import CoordinatorEntity
 
-from .const import DOMAIN, MANUFACTURER
+from .const import DOMAIN, MANUFACTURER, DEVICE_TYPE_INVERTER, DEVICE_TYPE_BATTERY
 
 
 STRING_KEYS = {
@@ -53,7 +53,6 @@ SENSOR_MAP = {
     "pvTotalPower": SensorEntityDescription(
         key="pvTotalPower",
         translation_key="pvTotalPower",
-        icon="mdi:solar-power",
         native_unit_of_measurement=UnitOfPower.WATT,
         device_class=SensorDeviceClass.POWER,
         state_class=SensorStateClass.MEASUREMENT,
@@ -120,7 +119,6 @@ SENSOR_MAP = {
     "emsSoc": SensorEntityDescription(
         key="emsSoc",
         translation_key="emsSoc",
-        icon="mdi:battery",
         native_unit_of_measurement=PERCENTAGE,
         device_class=SensorDeviceClass.BATTERY,
         state_class=SensorStateClass.MEASUREMENT,
@@ -134,12 +132,14 @@ SENSOR_MAP = {
     ),
     "emsVoltage": SensorEntityDescription(
         key="emsVoltage",
+        translation_key="emsVoltage",
         native_unit_of_measurement=UnitOfElectricPotential.VOLT,
         device_class=SensorDeviceClass.VOLTAGE,
         state_class=SensorStateClass.MEASUREMENT,
     ),
     "emsCurrent": SensorEntityDescription(
         key="emsCurrent",
+        translation_key="emsCurrent",
         native_unit_of_measurement=UnitOfElectricCurrent.AMPERE,
         device_class=SensorDeviceClass.CURRENT,
         state_class=SensorStateClass.MEASUREMENT,
@@ -156,7 +156,7 @@ SENSOR_MAP = {
         native_unit_of_measurement=UnitOfEnergy.KILO_WATT_HOUR,
         device_class=SensorDeviceClass.ENERGY,
     ),
-    
+
     "ePvToday": SensorEntityDescription(
         key="ePvToday",
         translation_key="ePvToday",
@@ -252,19 +252,101 @@ BATTERY_KEYS = [
 ]
 
 
+def _device_kind_from_data(data: dict) -> str:
+    device_type = str(data.get("deviceType") or "").upper()
+    alias = str(data.get("alias") or "").lower()
+    model = str(data.get("deviceModel") or "").upper()
+    type_name = str(data.get("type") or "").upper()
+
+    if device_type == DEVICE_TYPE_INVERTER or "IVGM" in model or "IVGM" in type_name:
+        return "inverter"
+
+    if (
+        device_type == DEVICE_TYPE_BATTERY
+        or alias.startswith("batterie")
+        or alias.startswith("battery")
+        or "LUX" in model
+        or "LUX" in type_name
+        or data.get("battSoc") is not None
+        or data.get("bmsPower") is not None
+    ):
+        return "battery"
+
+    return "unknown"
+
+
+def _keys_for_kind(kind: str) -> list[str]:
+    if kind == "inverter":
+        return INVERTER_KEYS
+
+    if kind == "battery":
+        return BATTERY_KEYS
+
+    return [
+        "deviceSn",
+        "deviceModel",
+        "deviceType",
+        "status",
+        "firmwareVersion",
+    ]
+
+
 async def async_setup_entry(hass, entry, async_add_entities):
     coordinator = hass.data[DOMAIN][entry.entry_id]
     entities = []
 
-    for key in INVERTER_KEYS:
-        desc = SENSOR_MAP.get(key)
-        if desc:
-            entities.append(FelicitySensor(coordinator, entry, desc, "inverter"))
+    data = coordinator.data or {}
+    devices_by_sn = data.get("devices_by_sn") or {}
 
-    for key in BATTERY_KEYS:
-        desc = SENSOR_MAP.get(key)
-        if desc:
-            entities.append(FelicitySensor(coordinator, entry, desc, "battery"))
+    # Dynamischer Pfad: alle Geräte aus devices_by_sn
+    if devices_by_sn:
+        for device_sn, device_data in devices_by_sn.items():
+            if not isinstance(device_data, dict):
+                continue
+
+            kind = _device_kind_from_data(device_data)
+            keys = _keys_for_kind(kind)
+
+            for key in keys:
+                desc = SENSOR_MAP.get(key)
+                if desc:
+                    entities.append(
+                        FelicitySensor(
+                            coordinator=coordinator,
+                            entry=entry,
+                            description=desc,
+                            device_kind=kind,
+                            device_sn=str(device_sn),
+                        )
+                    )
+
+    # Legacy-Fallback: falls devices_by_sn noch nicht verfügbar ist
+    if not entities:
+        for key in INVERTER_KEYS:
+            desc = SENSOR_MAP.get(key)
+            if desc:
+                entities.append(
+                    FelicitySensor(
+                        coordinator=coordinator,
+                        entry=entry,
+                        description=desc,
+                        device_kind="inverter",
+                        device_sn=None,
+                    )
+                )
+
+        for key in BATTERY_KEYS:
+            desc = SENSOR_MAP.get(key)
+            if desc:
+                entities.append(
+                    FelicitySensor(
+                        coordinator=coordinator,
+                        entry=entry,
+                        description=desc,
+                        device_kind="battery",
+                        device_sn=None,
+                    )
+                )
 
     async_add_entities(entities)
 
@@ -272,47 +354,63 @@ async def async_setup_entry(hass, entry, async_add_entities):
 class FelicitySensor(CoordinatorEntity, SensorEntity):
     _attr_has_entity_name = True
 
-    def __init__(self, coordinator, entry, description, device_group: str):
+    def __init__(
+        self,
+        coordinator,
+        entry,
+        description,
+        device_kind: str,
+        device_sn: str | None,
+    ):
         super().__init__(coordinator)
+
         self.entity_description = description
-        self._device_group = device_group
-        self._attr_unique_id = f"{entry.entry_id}-{device_group}-{description.key}"
+        self._device_kind = device_kind
+        self._device_sn = device_sn
+
+        unique_device_part = device_sn or device_kind
+        self._attr_unique_id = f"{entry.entry_id}-{unique_device_part}-{description.key}"
 
     def _device_data(self) -> dict:
         data = self.coordinator.data or {}
+
+        if self._device_sn:
+            devices_by_sn = data.get("devices_by_sn") or {}
+            device_data = devices_by_sn.get(self._device_sn)
+
+            if isinstance(device_data, dict):
+                return device_data
+
         devices = data.get("devices", {})
-        return devices.get(self._device_group, {}) or {}
+        return devices.get(self._device_kind, {}) or {}
 
     def _get(self, data, key):
         val = data.get(key)
+
         if val in (None, "unknown", "unavailable", ""):
             return None
+
         return val
 
     def _device_name(self, data: dict) -> str:
-        alias = data.get("alias") or data.get("plantName") or self._device_group.title()
+        alias = data.get("alias") or data.get("plantName") or self._device_kind.title()
 
-        if self._device_group == "inverter":
+        if self._device_kind == "inverter":
             if str(alias).lower().startswith("inverter-"):
                 return str(alias)
             return f"Inverter-{alias}"
 
-        if str(alias).lower().startswith("batterie-") or str(alias).lower().startswith("battery-"):
-            return str(alias)
+        if self._device_kind == "battery":
+            if str(alias).lower().startswith("batterie-") or str(alias).lower().startswith("battery-"):
+                return str(alias)
+            return f"Batterie-{alias}"
 
-        return f"Batterie-{alias}"
+        return str(alias)
 
     @property
     def device_info(self):
         data = self._device_data()
-        sn = data.get("deviceSn") or self._device_group
-
-        if self._device_group == "inverter":
-            suggested_area = "Garage"
-            icon = "mdi:solar-power"
-        else:
-            suggested_area = "Garage"
-            icon = "mdi:battery"
+        sn = data.get("deviceSn") or self._device_sn or self._device_kind
 
         return {
             "identifiers": {(DOMAIN, str(sn))},
@@ -320,8 +418,8 @@ class FelicitySensor(CoordinatorEntity, SensorEntity):
             "manufacturer": MANUFACTURER,
             "model": data.get("deviceModel"),
             "sw_version": data.get("firmwareVersion") or data.get("moduleVersion"),
-            "suggested_area": suggested_area,
             "configuration_url": "https://shine.felicitysolar.com",
+            "suggested_area": data.get("plantName") or "Garage",
         }
 
     @property
@@ -329,7 +427,7 @@ class FelicitySensor(CoordinatorEntity, SensorEntity):
         data = self._device_data()
         key = self.entity_description.key
 
-        if self._device_group == "battery":
+        if self._device_kind == "battery":
             battery_key_map = {
                 "emsSoc": ["emsSoc", "battSoc"],
                 "emsPower": ["bmsPower", "emsPower"],
