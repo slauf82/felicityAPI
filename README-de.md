@@ -2,30 +2,43 @@
 
 Benutzerdefinierte Home-Assistant-Integration für Felicity Solar Cloud Geräte.
 
-Diese Integration verbindet sich direkt mit der offiziellen Felicity Solar Cloud API und stellt Sensordaten für folgende Geräte bereit:
+Diese Integration verbindet sich direkt mit der Felicity Solar Cloud API und stellt Sensordaten in Home Assistant bereit.
+
+## Unterstützte Bereiche
 
 - Wechselrichter
 - Batterien
-- Energie-Statistiken
 - PV-Produktion
 - Netzbezug und Einspeisung
 - Batterie-Laden und Entladen
-- Gerätestatus und Diagnosedaten
+- Tages-Energiestatistiken
+- Gerätestatus
+- Diagnosedaten
 
 ---
 
-# Aktueller Projektstatus
+## Aktueller Projektstatus
 
-Frühe Beta / aktive Entwicklung.
+**Version:** `v0.2.1-beta`  
+**Status:** Frühe Beta / aktive Entwicklung
 
-Die Integration ist bereits stabil genug für den täglichen Einsatz, die interne Architektur wird jedoch aktuell noch verbessert und refactored.
+Die Integration ist bereits für den täglichen Einsatz nutzbar, befindet sich aber weiterhin in aktiver Entwicklung.
+
+Der aktuelle Stand enthält bereits eine dynamische Geräteerkennung mit seriennummernbasierter Sensorerzeugung und Legacy-Fallback-Struktur.
+
+---
 
 ## Bereits funktionsfähig
 
-- Wechselrichter-Erkennung
-- Batterie-Erkennung
-- Automatische Geräteerkennung
-- Optionale manuelle Seriennummern als Fallback
+- Zentrale API-Schicht
+- Zentrale Request-Verarbeitung
+- Zentrale Authentifizierung
+- Token-Handling
+- SSL-Handling-Workaround
+- Automatische Geräteerkennung über `list_device_all_type`
+- Seriennummernbasierte Gerätezuordnung
+- Dynamische Sensorerzeugung pro erkanntem Gerät
+- Legacy-Fallback für Wechselrichter und Batterie
 - Gerätegrennung innerhalb von Home Assistant
 - PV-Leistungssensoren
 - Netzleistungs-Sensoren
@@ -33,57 +46,92 @@ Die Integration ist bereits stabil genug für den täglichen Einsatz, die intern
 - Tägliche Energie-Statistiken
 - HotJson-Auswertung
 - Config-Flow Einrichtung
-- SSL-Handling-Workaround
-- Unterstützung der Home-Assistant-Geräteregistrierung
+- Home-Assistant-Geräteregistrierung
+
+---
 
 ## Aktuell in Arbeit
 
-- Dynamische Multi-Geräte-Architektur
-- Coordinator-Refactoring
+- Erweiterte dynamische Multi-Geräte-Unterstützung
+- Unterstützung mehrerer Wechselrichter
+- Unterstützung mehrerer Batterien
 - Verbesserte Sensor-Abstraktion
 - Erweiterte Diagnosefunktionen
-- HACS-Vorbereitung
 - Options-Flow
+- HACS-Vorbereitung
 - Code-Bereinigung und Optimierung
 
 ---
 
-# Funktionen
-
-## Geräteunterstützung
+## Funktionen
 
 ### Wechselrichter-Sensoren
 
-- PV Gesamtleistung
-- PV String-Leistungen
-- Netzbezug / Einspeisung
-- Tägliche PV-Produktion
-- Täglicher Netzbezug
-- Tägliche Netzeinspeisung
-- Batterie Laden / Entladen
+- Seriennummer
+- Gerätemodell
+- Gerätetyp
 - Firmware-Version
 - Gerätestatus
 - Betriebsmodus
 - Energiezustand
+- Alarmanzahl
+- Alarmtext
+- PV Gesamtleistung
+- PV String-Leistungen
+- Netzleistung
+- Netzbezug aktuell
+- Netzeinspeisung aktuell
+- Hausverbrauch
+- PV Energie heute
+- Gesamtenergie heute
+- Netzbezug heute
+- Netzeinspeisung heute
+- Batterie Laden heute
+- Batterie Entladen heute
 
 ### Batterie-Sensoren
 
-- Batterie-Ladezustand (SOC)
+- Seriennummer
+- Gerätemodell
+- Gerätetyp
+- Firmware-Version
+- Gerätestatus
+- Batterie-Ladezustand
 - Batterieleistung
 - Batteriespannung
 - Batteriestrom
-- Batterie-SOH
+- Batterie-Gesundheit / SOH
 - Batteriekapazität
-- Tägliche Lade-/Entladeenergie
+- Batterie Laden heute
+- Batterie Entladen heute
 
 ---
 
-# Installation
+## Unterstützung mehrerer Geräte
 
-## Manuelle Installation
+Die Integration ist darauf ausgelegt, mehrere Felicity-Geräte gleichzeitig zu unterstützen.
+
+Intern werden Geräte aus `list_device_all_type` anhand ihrer Seriennummer indexiert und Sensoren dynamisch pro Gerät erzeugt.
+
+Aktuell getestet mit:
+
+- 1 Wechselrichter
+- 1 Batterie
+
+Community-Tests werden noch benötigt für:
+
+- mehrere Wechselrichter
+- mehrere Batterien
+- größere gemischte Anlagen
+- unterschiedliche Felicity-Gerätemodelle
+
+---
+
+## Installation
+
+### Manuelle Installation
 
 Den Integrationsordner nach folgendem Pfad kopieren:
-
 /config/custom_components/felicity_api/
 
 Anschließend Home Assistant neu starten.
@@ -104,17 +152,17 @@ Die Integration versucht zuerst eine automatische Geräteerkennung über die Fel
 
 Manuelle Seriennummern dienen nur als Fallback.
 
-* SSL-Hinweis
+SSL-Hinweis
 
 Felicity verwendet aktuell SSL-Zertifikate, die innerhalb mancher Home-Assistant-Umgebungen keine vollständige Zertifikatsvalidierung ermöglichen.
 
 Daher verwendet die Integration derzeit bewusst einen gelockerten SSL-Kontext.
 
-Dies ist aktuell eine Kompatibilitätslösung, bis Felicity die Zertifikatskette verbessert.
+Dies ist aktuell eine Kompatibilitätslösung, bis Felicity die Zertifikatskette verbessert oder eine saubere Validierung zuverlässig möglich ist.
 
-Architektur
+# Architektur
 
-Die Integration befindet sich aktuell im Übergang von einer festen Zwei-Geräte-Struktur zu einer vollständig dynamischen Multi-Geräte-Architektur.
+Die Integration befindet sich im Übergang von einer festen Zwei-Geräte-Struktur zu einer dynamischen Multi-Geräte-Architektur.
 
 Der aktuelle interne Aufbau umfasst:
 
@@ -123,27 +171,10 @@ Der aktuelle interne Aufbau umfasst:
 * zentrale Authentifizierungsverwaltung
 * zentrale SSL-Verwaltung
 * Coordinator-basierte Geräteverwaltung
-# Entwicklungsziele
-Geplante Verbesserungen
-* Vollständig dynamische Geräteverwaltung
-* Unterstützung mehrerer Wechselrichter
-* Unterstützung mehrerer Batterien
-* Erweiterte Diagnosefunktionen
-* Sauberere Sensor-Abstraktion
-* Entity-Kategorien
-* Gerätesteuerungen
-* Echtzeit-/WebSocket-Unterstützung (falls möglich)
-* HACS-Release
-* Verbesserte Übersetzungen
-* Repair-Flow-Unterstützung
-# Bekannte Einschränkungen
-* Einige Felicity API-Felder sind undokumentiert
-* API-Strukturen können sich je nach Firmware-Generation unterscheiden
-* SSL-Validierung ist aktuell bewusst gelockert
-* Einige Sensoren verwenden derzeit noch Fallback-Mappings
+* devices_by_sn als dynamische Gerätebasis
+* Legacy-Fallback für bestehende Wechselrichter-/Batterie-Struktur
 
-
-Anforderungen
+# Anforderungen
 
 Die Integration benötigt aktuell:
 
@@ -154,18 +185,42 @@ Home Assistant Kompatibilität
 
 Getestet mit aktuellen Home-Assistant-Versionen einschließlich:
 
-2025.x
-2026.x
-Haftungsausschluss
+* 2025.x
+* 2026.x
+
+# Bekannte Einschränkungen
+Einige Felicity API-Felder sind undokumentiert.
+API-Strukturen können sich je nach Firmware-Generation unterscheiden.
+SSL-Validierung ist aktuell bewusst gelockert.
+Multi-Geräte-Setups benötigen noch Community-Tests.
+Einige Sensoren verwenden derzeit noch Fallback-Mappings.
+Entwicklungsziele
+
+# Geplante Verbesserungen:
+
+* Vollständig dynamische Geräteverwaltung
+* Unterstützung mehrerer Wechselrichter
+* Unterstützung mehrerer Batterien
+* Erweiterte Diagnosefunktionen
+* Sauberere Sensor-Abstraktion
+* Entity-Kategorien
+* Options-Flow
+* Gerätesteuerungen
+* Echtzeit-/WebSocket-Unterstützung, falls möglich
+* HACS-Release
+* Verbesserte Übersetzungen
+* Repair-Flow-Unterstützung
+
+# Haftungsausschluss
 
 Dieses Projekt steht in keiner Verbindung zu Felicity Solar und wird nicht offiziell unterstützt.
 
 Verwendung auf eigene Verantwortung.
 
 Danksagung
-Felicity Solar Cloud Plattform
-Home Assistant Community
-Reverse Engineering und Tests durch die Community
-Lizenz
+* Felicity Solar Cloud Plattform
+* Home Assistant Community
+* Reverse Engineering und Tests durch die Community
 
+# Lizenz
 GNU General Public License v3.0 (GPL-3.0)
