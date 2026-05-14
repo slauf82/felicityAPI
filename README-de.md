@@ -217,7 +217,7 @@ Dieses Projekt steht in keiner Verbindung zu Felicity Solar und wird nicht offiz
 
 Verwendung auf eigene Verantwortung.
 
-Danksagung
+# Danksagung
 * Felicity Solar Cloud Plattform
 * Home Assistant Community
 * Reverse Engineering und Tests durch die Community
