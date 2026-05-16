@@ -1,8 +1,11 @@
 {
   "domain": "felicity_api",
   "name": "Felicity API",
-  "version": "0.2.2",
+  "codeowners": ["@slauf82"],
   "config_flow": true,
+  "documentation": "https://github.com/slauf82/felicity_api",
+  "iot_class": "cloud_polling",
+  "issue_tracker": "https://github.com/slauf82/felicity_api/issues",
   "requirements": ["pycryptodomex"],
-  "iot_class": "cloud_polling"
+  "version": "0.2.2"
 }
