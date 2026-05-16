@@ -1,0 +1,6 @@
+{
+  "name": "Felicity API",
+  "render_readme": true,
+  "domains": ["felicity_api"],
+  "homeassistant": "2025.1.0"
+}
