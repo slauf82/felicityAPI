@@ -1,7 +1,58 @@
-# deutsche README ist in der README-de.md
-# english README is in file README-en.md
+# Felicity API for Home Assistant
 
+Custom Home Assistant integration for Felicity Solar Cloud devices.
 
-Lizenzergänzung : Auch von KI umgewandelte Produkte, die auf diesem Projekt beruhen, unterstehen der GPL 3.0 Lizenz.
+---
 
-Additional license information : Also from AI generated products, which are based on this project, must be published unter GPL 3.0 License.
+## Documentation
+
+- German README: [README-de.md](README-de.md)
+- English README: [README-en.md](README-en.md)
+
+---
+
+## Features
+
+- HACS compatible
+- Dynamic device detection
+- Inverter support
+- Battery support
+- Diagnostics support
+- Automatic serial number detection
+- Dynamic sensor creation
+
+---
+
+## Installation
+
+### HACS (recommended)
+
+Add custom repository:
+
+https://github.com/slauf82/felicityAPI
+
+Category:
+
+Integration
+
+Then install:
+
+Felicity API
+
+---
+
+## License
+
+GNU General Public License v3.0 (GPL-3.0)
+
+---
+
+## Additional license information
+
+AI-generated or AI-assisted products based on this project must also remain under the GPL 3.0 license.
+
+---
+
+## Disclaimer
+
+This project is not affiliated with Felicity Solar and is not officially supported.
