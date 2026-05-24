@@ -1,4 +1,4 @@
-DOMAIN = "ha_felicity_api"
+DOMAIN = "felicityAPI"
 
 PLATFORMS = ["sensor"]
 
