@@ -1,5 +1,5 @@
 {
-  "domain": "felicityAPI",
+  "domain": "felicity_api",
   "name": "Felicity API",
   "codeowners": ["@slauf82"],
   "config_flow": true,
