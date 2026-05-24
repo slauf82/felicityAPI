@@ -51,6 +51,8 @@
       "emsPower": { "name": "Battery Power" },
       "emsSoh": { "name": "Battery SOH" },
       "emsCapacity": { "name": "Battery Capacity" },
+      "emsVoltage": { "name": "Voltage" },
+      "emsCurrent": { "name": "Current" },
 
       "ePvToday": { "name": "PV Energy Today" },
       "eToday": { "name": "Total Energy Today" },
