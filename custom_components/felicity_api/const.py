@@ -1,4 +1,4 @@
-DOMAIN = "felicity_api"
+DOMAIN = "felicityAPI"
 
 PLATFORMS = ["sensor"]
 
