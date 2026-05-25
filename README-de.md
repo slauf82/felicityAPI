@@ -19,8 +19,7 @@ Diese Integration verbindet sich direkt mit der Felicity Solar Cloud API und ste
 
 ## Aktueller Projektstatus
 
-**Version:** `v0.2.2`  
-**Status:** Frühe Beta / aktive Entwicklung
+**Version:** `v1.0.0`  
 
 Die Integration ist bereits für den täglichen Einsatz nutzbar, befindet sich aber weiterhin in aktiver Entwicklung.
 
