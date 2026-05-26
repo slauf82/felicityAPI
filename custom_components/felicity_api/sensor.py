@@ -407,20 +407,35 @@ class FelicitySensor(CoordinatorEntity, SensorEntity):
 
         return str(alias)
 
-    @property
+        @property
     def device_info(self):
         data = self._device_data()
         sn = data.get("deviceSn") or self._device_sn or self._device_kind
 
-        return {
+        if self._device_kind == "inverter":
+            model = "Felicity Inverter"
+            model_id = "felicity_inverter"
+        elif self._device_kind == "battery":
+            model = "Felicity Battery"
+            model_id = "felicity_battery"
+        else:
+            model = data.get("deviceModel")
+            model_id = None
+
+        device_info = {
             "identifiers": {(DOMAIN, str(sn))},
             "name": self._device_name(data),
             "manufacturer": MANUFACTURER,
-            "model": data.get("deviceModel"),
+            "model": model,
             "sw_version": data.get("firmwareVersion") or data.get("moduleVersion"),
             "configuration_url": "https://shine.felicitysolar.com",
             "suggested_area": data.get("plantName") or "Garage",
         }
+
+        if model_id:
+            device_info["model_id"] = model_id
+
+        return device_info
 
     @property
     def native_value(self) -> Optional[Any]:
