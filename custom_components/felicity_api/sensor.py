@@ -407,7 +407,7 @@ class FelicitySensor(CoordinatorEntity, SensorEntity):
 
         return str(alias)
 
-        @property
+    @property
     def device_info(self):
         data = self._device_data()
         sn = data.get("deviceSn") or self._device_sn or self._device_kind
