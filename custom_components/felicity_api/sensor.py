@@ -413,11 +413,13 @@ class FelicitySensor(CoordinatorEntity, SensorEntity):
         sn = data.get("deviceSn") or self._device_sn or self._device_kind
 
         if self._device_kind == "inverter":
-            model = "Felicity Inverter"
-            model_id = "felicity_inverter"
+            model = data.get("deviceModel") or "IVGM100600"
+            model_id = "OC"
+
         elif self._device_kind == "battery":
-            model = "Felicity Battery"
-            model_id = "felicity_battery"
+            model = data.get("deviceModel") or "LUX-X-96050HG01"
+            model_id = "BP"
+            
         else:
             model = data.get("deviceModel")
             model_id = None
