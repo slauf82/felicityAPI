@@ -115,6 +115,28 @@ class FelicityAPI:
 
         return data
 
+    def _build_login_payload(
+        self,
+        encrypted_password: str,
+        payload_style: str,
+    ) -> dict[str, Any]:
+        """Build login payload variants used by different Felicity cloud versions."""
+        username_field = "account" if payload_style.endswith("_account") else "userName"
+
+        if payload_style.startswith("modern"):
+            return {
+                username_field: self._username,
+                "password": encrypted_password,
+                "version": "1.0",
+            }
+
+        return {
+            username_field: self._username,
+            "password": encrypted_password,
+            "source": "WEB",
+            "lang": "de_DE",
+        }
+
     async def _login_once(
         self,
         endpoint: str,
@@ -122,20 +144,7 @@ class FelicityAPI:
         payload_style: str,
     ) -> str:
         encrypted_password = self._encrypt_password(self._password, public_key)
-
-        if payload_style == "legacy":
-            payload = {
-                "userName": self._username,
-                "password": encrypted_password,
-                "source": "WEB",
-                "lang": "de_DE",
-            }
-        else:
-            payload = {
-                "userName": self._username,
-                "password": encrypted_password,
-                "version": "1.0",
-            }
+        payload = self._build_login_payload(encrypted_password, payload_style)
 
         data = await self._request(
             "POST",
@@ -158,12 +167,25 @@ class FelicityAPI:
         return token
 
     async def login(self) -> None:
-        attempts = [
-            (API_LOGIN, PUBLIC_KEY, "legacy"),
-            (API_LOGIN_FALLBACK, PUBLIC_KEY_FALLBACK, "modern"),
-            (API_LOGIN_FALLBACK, PUBLIC_KEY, "legacy"),
-            (API_LOGIN, PUBLIC_KEY_FALLBACK, "modern"),
+        endpoints = [API_LOGIN, API_LOGIN_FALLBACK]
+        public_keys = [PUBLIC_KEY, PUBLIC_KEY_FALLBACK]
+        payload_styles = [
+            "legacy_userName",
+            "modern_userName",
+            "legacy_account",
+            "modern_account",
         ]
+
+        # Keep the known working v1.2.0 path first, then try all fallback variants.
+        attempts: list[tuple[str, str, str]] = [(API_LOGIN, PUBLIC_KEY, "legacy_userName")]
+
+        for endpoint in endpoints:
+            for public_key in public_keys:
+                for payload_style in payload_styles:
+                    attempt = (endpoint, public_key, payload_style)
+                    if attempt not in attempts:
+                        attempts.append(attempt)
+
         errors: list[str] = []
 
         for endpoint, public_key, payload_style in attempts:
