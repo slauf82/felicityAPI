@@ -32,6 +32,11 @@ STRING_KEYS = {
     "workingMode",
     "alarmText",
     "dataTimeStr",
+    "lastWarningName",
+    "lastWarningCode",
+    "lastWarningType",
+    "lastWarningTime",
+    "warningSummary",
 }
 
 
@@ -110,6 +115,22 @@ SENSOR_MAP = {
         state_class=SensorStateClass.MEASUREMENT,
     ),
     "alarmText": SensorEntityDescription(key="alarmText", translation_key="alarmText"),
+
+    "activeWarningCount": SensorEntityDescription(
+        key="activeWarningCount",
+        translation_key="activeWarningCount",
+        state_class=SensorStateClass.MEASUREMENT,
+    ),
+    "lastWarningName": SensorEntityDescription(key="lastWarningName", translation_key="lastWarningName"),
+    "lastWarningCode": SensorEntityDescription(key="lastWarningCode", translation_key="lastWarningCode"),
+    "lastWarningLevel": SensorEntityDescription(
+        key="lastWarningLevel",
+        translation_key="lastWarningLevel",
+        state_class=SensorStateClass.MEASUREMENT,
+    ),
+    "lastWarningType": SensorEntityDescription(key="lastWarningType", translation_key="lastWarningType"),
+    "lastWarningTime": SensorEntityDescription(key="lastWarningTime", translation_key="lastWarningTime"),
+    "warningSummary": SensorEntityDescription(key="warningSummary", translation_key="warningSummary"),
 
     "pvTotalPower": SensorEntityDescription(
         key="pvTotalPower",
@@ -336,6 +357,13 @@ INVERTER_KEYS = [
     "workingMode",
     "alarmCount",
     "alarmText",
+    "activeWarningCount",
+    "lastWarningName",
+    "lastWarningCode",
+    "lastWarningLevel",
+    "lastWarningType",
+    "lastWarningTime",
+    "warningSummary",
     "pvTotalPower",
     "pv1Power",
     "pv2Power",
@@ -402,6 +430,13 @@ BATTERY_KEYS = [
     "workingMode",
     "alarmCount",
     "alarmText",
+    "activeWarningCount",
+    "lastWarningName",
+    "lastWarningCode",
+    "lastWarningLevel",
+    "lastWarningType",
+    "lastWarningTime",
+    "warningSummary",
     "emsSoc",
     "emsPower",
     "emsVoltage",

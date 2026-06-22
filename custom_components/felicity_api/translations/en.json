@@ -253,6 +253,27 @@
       },
       "batLineCount": {
         "name": "Battery Lines"
+      },
+      "activeWarningCount": {
+        "name": "Active Warnings"
+      },
+      "lastWarningName": {
+        "name": "Last Warning"
+      },
+      "lastWarningCode": {
+        "name": "Last Warning Code"
+      },
+      "lastWarningLevel": {
+        "name": "Last Warning Level"
+      },
+      "lastWarningType": {
+        "name": "Last Warning Type"
+      },
+      "lastWarningTime": {
+        "name": "Last Warning Time"
+      },
+      "warningSummary": {
+        "name": "Warning Summary"
       }
     }
   }

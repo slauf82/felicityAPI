@@ -15,9 +15,12 @@ from .const import (
     API_DEVICE_SNAPSHOT,
     API_DEVICE_BASIC,
     API_DEVICE_ENERGY_FLOW,
+    API_DEVICE_WARNINGS,
 )
 
 PUBLIC_KEY = "MFwwDQYJKoZIhvcNAQEBBQADSwAwSAJBAK0GDivaRzIKeTmQnAxAYh2LChuHWDp0yHZ0zIvm+Eoi7J+rx7phqR7EtkBDO3HWqAXVkNDeeQaU32P5w1Q4FVUCAwEAAQ=="
+PUBLIC_KEY_FALLBACK = "MIIBIjANBgkqhkiG9w0BAQEFAAOCAQ8AMIIBCgKCAQEAnAJE68pjWZmtSg6ZJs9FZugJXC6bBSluTW6mJttOLOaljrdErVnM5DNN+YFzpB9pAysTErjY1bnSVuEwQSwptnqUji7Ch2qMj2n+0eCp8p6vtSh7/tFr2ul8nDRtkoswLANAIwtUk/G85ipMpmY1W642LImnEJmGkkddlbjbjxJTZWR5hc/d9cPWb+AR77LxFFrMik3c+44v1kQlIPFP6EjIbOvt/Lv7fHWD9JI/YzN4y1gK7C/VQdNGuikQyNg+5W3rg9ecYf9I5uLAQwY/hxeI3lbNsErebqKe2EbJ8AwcNIC0lDBz53Sq0ML89QapEuy3fB+upuctxLULVDCbNwIDAQAB"
+API_LOGIN_FALLBACK = "/userlogin"
 
 BASE_URL = "https://shine-api.felicitysolar.com"
 
@@ -44,8 +47,8 @@ class FelicityAPI:
         context.verify_mode = ssl.CERT_NONE
         return context
 
-    def _encrypt_password(self, password: str) -> str:
-        key = RSA.import_key(base64.b64decode(PUBLIC_KEY))
+    def _encrypt_password(self, password: str, public_key: str = PUBLIC_KEY) -> str:
+        key = RSA.import_key(base64.b64decode(public_key))
         cipher = PKCS1_v1_5.new(key)
         return base64.b64encode(cipher.encrypt(password.encode())).decode()
 
@@ -112,33 +115,65 @@ class FelicityAPI:
 
         return data
 
-    async def login(self) -> None:
-        payload = {
-            "userName": self._username,
-            "password": self._encrypt_password(self._password),
-            "source": "WEB",
-            "lang": "de_DE",
-        }
+    async def _login_once(
+        self,
+        endpoint: str,
+        public_key: str,
+        payload_style: str,
+    ) -> str:
+        encrypted_password = self._encrypt_password(self._password, public_key)
+
+        if payload_style == "legacy":
+            payload = {
+                "userName": self._username,
+                "password": encrypted_password,
+                "source": "WEB",
+                "lang": "de_DE",
+            }
+        else:
+            payload = {
+                "userName": self._username,
+                "password": encrypted_password,
+                "version": "1.0",
+            }
 
         data = await self._request(
             "POST",
-            API_LOGIN,
+            endpoint,
             json_payload=payload,
             auth=False,
         )
 
         if data.get("code") != 200:
-            raise FelicityAuthError(f"Login failed: {data}")
+            raise FelicityAuthError(f"Login failed via {endpoint}: {data}")
 
         token = data.get("data", {}).get("token")
 
         if not token:
-            raise FelicityAuthError(f"Login failed: no token received: {data}")
+            raise FelicityAuthError(f"Login failed via {endpoint}: no token received: {data}")
 
         if not token.startswith("Bearer_"):
             token = f"Bearer_{token}"
 
-        self._token = token
+        return token
+
+    async def login(self) -> None:
+        attempts = [
+            (API_LOGIN, PUBLIC_KEY, "legacy"),
+            (API_LOGIN_FALLBACK, PUBLIC_KEY_FALLBACK, "modern"),
+            (API_LOGIN_FALLBACK, PUBLIC_KEY, "legacy"),
+            (API_LOGIN, PUBLIC_KEY_FALLBACK, "modern"),
+        ]
+        errors: list[str] = []
+
+        for endpoint, public_key, payload_style in attempts:
+            try:
+                self._token = await self._login_once(endpoint, public_key, payload_style)
+                return
+            except Exception as err:
+                errors.append(f"{endpoint}/{payload_style}: {err}")
+
+        raise FelicityAuthError("Login failed for all supported Felicity login variants: " + " | ".join(errors))
 
     async def ensure_login(self) -> None:
         if not self._token:
@@ -172,6 +207,13 @@ class FelicityAPI:
         return await self._request(
             "GET",
             f"{API_DEVICE_ENERGY_FLOW}?deviceSN={device_sn}",
+        )
+
+
+    async def get_warnings(self) -> dict[str, Any]:
+        return await self._request(
+            "GET",
+            API_DEVICE_WARNINGS,
         )
 
     async def get_device_list(self) -> dict[str, Any]:

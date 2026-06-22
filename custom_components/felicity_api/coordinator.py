@@ -83,6 +83,75 @@ class FelicityCoordinator(DataUpdateCoordinator):
         except Exception:
             return {}
 
+    async def _safe_warnings(self) -> list[Dict[str, Any]]:
+        try:
+            raw = await self.api.get_warnings()
+
+            if not isinstance(raw, dict):
+                return []
+
+            if raw.get("status") in (400, 401, 403, 404, 500):
+                return []
+
+            if raw.get("code") not in (None, 200):
+                return []
+
+            data = raw.get("data", {})
+            if not isinstance(data, dict):
+                return []
+
+            warnings = data.get("dataList", []) or []
+            return [item for item in warnings if isinstance(item, dict)]
+
+        except Exception as err:
+            _LOGGER.warning("Warnings fetch failed: %s", err)
+            return []
+
+    def _warnings_by_sn(self, warnings: list[Dict[str, Any]]) -> Dict[str, list[Dict[str, Any]]]:
+        result: Dict[str, list[Dict[str, Any]]] = {}
+
+        for warning in warnings:
+            device_sn = warning.get("deviceSn")
+            if not device_sn:
+                continue
+
+            result.setdefault(str(device_sn), []).append(warning)
+
+        for device_warnings in result.values():
+            device_warnings.sort(
+                key=lambda item: self._as_float(
+                    self._first(item.get("dataTime"), item.get("createDate")),
+                    0,
+                ),
+                reverse=True,
+            )
+
+        return result
+
+    def _apply_warning_state(self, device: Dict[str, Any], warnings: list[Dict[str, Any]]) -> None:
+        active_warnings = [
+            warning
+            for warning in warnings
+            if str(warning.get("status", 0)) == "0"
+        ]
+
+        latest = active_warnings[0] if active_warnings else (warnings[0] if warnings else {})
+
+        device["activeWarningCount"] = len(active_warnings)
+        device["lastWarningName"] = self._first(latest.get("warringName"), latest.get("warningName"), "")
+        device["lastWarningCode"] = self._first(latest.get("warnCode"), "")
+        device["lastWarningLevel"] = self._first(latest.get("level"), "")
+        device["lastWarningType"] = self._first(latest.get("warringTypeStr"), latest.get("warringType"), "")
+        device["lastWarningTime"] = self._first(latest.get("dataTimeStr"), latest.get("createDateStr"), "")
+
+        if active_warnings:
+            device["warningSummary"] = "; ".join(
+                str(self._first(warning.get("warringName"), warning.get("warnCode"), "Warnung"))
+                for warning in active_warnings[:5]
+            )
+        else:
+            device["warningSummary"] = "Keine aktive Warnung"
+
     def _parse_hot_json(self, data: Dict[str, Any]) -> None:
         hot = data.get("hotJson")
 
@@ -535,6 +604,15 @@ class FelicityCoordinator(DataUpdateCoordinator):
                     battery_sn,
                 )
 
+            warnings_raw = await self._safe_warnings()
+            warnings_by_sn = self._warnings_by_sn(warnings_raw)
+
+            if inverter_sn and inverter:
+                self._apply_warning_state(inverter, warnings_by_sn.get(str(inverter_sn), []))
+
+            if battery_sn and battery:
+                self._apply_warning_state(battery, warnings_by_sn.get(str(battery_sn), []))
+
             legacy_snapshot = {
                 "deviceSn": inverter.get("deviceSn"),
                 "deviceModel": inverter.get("deviceModel"),
@@ -583,6 +661,14 @@ class FelicityCoordinator(DataUpdateCoordinator):
                 "workingMode": inverter.get("workingMode"),
                 "alarmCount": inverter.get("alarmCount"),
                 "alarmText": inverter.get("alarmText"),
+
+                "activeWarningCount": inverter.get("activeWarningCount"),
+                "lastWarningName": inverter.get("lastWarningName"),
+                "lastWarningCode": inverter.get("lastWarningCode"),
+                "lastWarningLevel": inverter.get("lastWarningLevel"),
+                "lastWarningType": inverter.get("lastWarningType"),
+                "lastWarningTime": inverter.get("lastWarningTime"),
+                "warningSummary": inverter.get("warningSummary"),
 
                 "dataTimeStr": inverter.get("dataTimeStr"),
             }
