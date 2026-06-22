@@ -13,6 +13,7 @@ from homeassistant.const import (
     UnitOfPower,
     UnitOfElectricPotential,
     UnitOfElectricCurrent,
+    UnitOfTemperature,
     PERCENTAGE,
 )
 from homeassistant.helpers.update_coordinator import CoordinatorEntity
@@ -30,7 +31,67 @@ STRING_KEYS = {
     "energyState",
     "workingMode",
     "alarmText",
+    "dataTimeStr",
 }
+
+
+def _power_sensor(key: str) -> SensorEntityDescription:
+    return SensorEntityDescription(
+        key=key,
+        translation_key=key,
+        native_unit_of_measurement=UnitOfPower.WATT,
+        device_class=SensorDeviceClass.POWER,
+        state_class=SensorStateClass.MEASUREMENT,
+    )
+
+
+def _voltage_sensor(key: str) -> SensorEntityDescription:
+    return SensorEntityDescription(
+        key=key,
+        translation_key=key,
+        native_unit_of_measurement=UnitOfElectricPotential.VOLT,
+        device_class=SensorDeviceClass.VOLTAGE,
+        state_class=SensorStateClass.MEASUREMENT,
+    )
+
+
+def _current_sensor(key: str) -> SensorEntityDescription:
+    return SensorEntityDescription(
+        key=key,
+        translation_key=key,
+        native_unit_of_measurement=UnitOfElectricCurrent.AMPERE,
+        device_class=SensorDeviceClass.CURRENT,
+        state_class=SensorStateClass.MEASUREMENT,
+    )
+
+
+def _frequency_sensor(key: str) -> SensorEntityDescription:
+    return SensorEntityDescription(
+        key=key,
+        translation_key=key,
+        native_unit_of_measurement="Hz",
+        state_class=SensorStateClass.MEASUREMENT,
+    )
+
+
+def _temperature_sensor(key: str) -> SensorEntityDescription:
+    return SensorEntityDescription(
+        key=key,
+        translation_key=key,
+        native_unit_of_measurement=UnitOfTemperature.CELSIUS,
+        device_class=SensorDeviceClass.TEMPERATURE,
+        state_class=SensorStateClass.MEASUREMENT,
+    )
+
+
+def _energy_sensor(key: str, total_increasing: bool = False) -> SensorEntityDescription:
+    return SensorEntityDescription(
+        key=key,
+        translation_key=key,
+        native_unit_of_measurement=UnitOfEnergy.KILO_WATT_HOUR,
+        device_class=SensorDeviceClass.ENERGY,
+        state_class=SensorStateClass.TOTAL_INCREASING if total_increasing else None,
+    )
 
 
 SENSOR_MAP = {
@@ -199,6 +260,68 @@ SENSOR_MAP = {
         device_class=SensorDeviceClass.ENERGY,
         state_class=SensorStateClass.TOTAL_INCREASING,
     ),
+
+    # Inverter live values from get_energy_flow / snapshot
+    "pvVolt": _voltage_sensor("pvVolt"),
+    "pv2Volt": _voltage_sensor("pv2Volt"),
+    "pvInCurr": _current_sensor("pvInCurr"),
+    "pv2InCurr": _current_sensor("pv2InCurr"),
+
+    "acRInVolt": _voltage_sensor("acRInVolt"),
+    "acSInVolt": _voltage_sensor("acSInVolt"),
+    "acTInVolt": _voltage_sensor("acTInVolt"),
+    "acRInCurr": _current_sensor("acRInCurr"),
+    "acSInCurr": _current_sensor("acSInCurr"),
+    "acTInCurr": _current_sensor("acTInCurr"),
+    "acRInFreq": _frequency_sensor("acRInFreq"),
+    "acSInFreq": _frequency_sensor("acSInFreq"),
+    "acTInFreq": _frequency_sensor("acTInFreq"),
+
+    "acROutVolt": _voltage_sensor("acROutVolt"),
+    "acSOutVolt": _voltage_sensor("acSOutVolt"),
+    "acTOutVolt": _voltage_sensor("acTOutVolt"),
+    "acROutCurr": _current_sensor("acROutCurr"),
+    "acSOutCurr": _current_sensor("acSOutCurr"),
+    "acTOutCurr": _current_sensor("acTOutCurr"),
+    "acROutFreq": _frequency_sensor("acROutFreq"),
+    "acSOutFreq": _frequency_sensor("acSOutFreq"),
+    "acTOutFreq": _frequency_sensor("acTOutFreq"),
+
+    "loadPercent": SensorEntityDescription(
+        key="loadPercent",
+        translation_key="loadPercent",
+        native_unit_of_measurement=PERCENTAGE,
+        state_class=SensorStateClass.MEASUREMENT,
+    ),
+    "tempMax": _temperature_sensor("tempMax"),
+    "tempMin": _temperature_sensor("tempMin"),
+    "devTempMax": _temperature_sensor("devTempMax"),
+
+    "totalEnergy": _energy_sensor("totalEnergy"),
+    "ePvMonth": _energy_sensor("ePvMonth"),
+    "ePvYear": _energy_sensor("ePvYear"),
+    "ePvTotal": _energy_sensor("ePvTotal"),
+    "eGridFeedMonth": _energy_sensor("eGridFeedMonth"),
+    "eGridFeedYear": _energy_sensor("eGridFeedYear"),
+    "eGridFeedTotal": _energy_sensor("eGridFeedTotal"),
+    "eBatCharMonth": _energy_sensor("eBatCharMonth"),
+    "eBatCharYear": _energy_sensor("eBatCharYear"),
+    "eBatCharTotal": _energy_sensor("eBatCharTotal"),
+    "eBatDisCharMonth": _energy_sensor("eBatDisCharMonth"),
+    "eBatDisCharYear": _energy_sensor("eBatDisCharYear"),
+    "eBatDisCharTotal": _energy_sensor("eBatDisCharTotal"),
+
+    # Battery snapshot values
+    "remainingBatteryEnergy1": _energy_sensor("remainingBatteryEnergy1"),
+    "ratedEnergy": _energy_sensor("ratedEnergy"),
+    "bmsState": SensorEntityDescription(key="bmsState", translation_key="bmsState"),
+    "bmsChargingState": SensorEntityDescription(key="bmsChargingState", translation_key="bmsChargingState"),
+    "maxVoltage2bms": _voltage_sensor("maxVoltage2bms"),
+    "minVoltage2bms": _voltage_sensor("minVoltage2bms"),
+    "cellNumber": SensorEntityDescription(key="cellNumber", translation_key="cellNumber", state_class=SensorStateClass.MEASUREMENT),
+    "batCount": SensorEntityDescription(key="batCount", translation_key="batCount", state_class=SensorStateClass.MEASUREMENT),
+    "batLineCount": SensorEntityDescription(key="batLineCount", translation_key="batLineCount", state_class=SensorStateClass.MEASUREMENT),
+
 }
 
 
@@ -228,6 +351,44 @@ INVERTER_KEYS = [
     "eToday",
     "eGridFeedToday",
     "eGridInToday",
+    "pvVolt",
+    "pv2Volt",
+    "pvInCurr",
+    "pv2InCurr",
+    "acRInVolt",
+    "acSInVolt",
+    "acTInVolt",
+    "acRInCurr",
+    "acSInCurr",
+    "acTInCurr",
+    "acRInFreq",
+    "acSInFreq",
+    "acTInFreq",
+    "acROutVolt",
+    "acSOutVolt",
+    "acTOutVolt",
+    "acROutCurr",
+    "acSOutCurr",
+    "acTOutCurr",
+    "acROutFreq",
+    "acSOutFreq",
+    "acTOutFreq",
+    "loadPercent",
+    "tempMax",
+    "devTempMax",
+    "totalEnergy",
+    "ePvMonth",
+    "ePvYear",
+    "ePvTotal",
+    "eGridFeedMonth",
+    "eGridFeedYear",
+    "eGridFeedTotal",
+    "eBatCharMonth",
+    "eBatCharYear",
+    "eBatCharTotal",
+    "eBatDisCharMonth",
+    "eBatDisCharYear",
+    "eBatDisCharTotal",
 ]
 
 BATTERY_KEYS = [
@@ -249,6 +410,17 @@ BATTERY_KEYS = [
     "emsCapacity",
     "eBatCharToday",
     "eBatDisCharToday",
+    "tempMax",
+    "tempMin",
+    "remainingBatteryEnergy1",
+    "ratedEnergy",
+    "bmsState",
+    "bmsChargingState",
+    "maxVoltage2bms",
+    "minVoltage2bms",
+    "cellNumber",
+    "batCount",
+    "batLineCount",
 ]
 
 
@@ -465,7 +637,7 @@ class FelicitySensor(CoordinatorEntity, SensorEntity):
                 return None
 
         if key == "grid_import":
-            val = self._get(data, "acTtlInpower") or self._get(data, "ctAcTtlInPower")
+            val = self._get(data, "acTtlInpower") or self._get(data, "acTtlInPower") or self._get(data, "ctAcTtlInPower")
             try:
                 val = float(val)
                 return abs(val) if val < 0 else 0
@@ -473,7 +645,7 @@ class FelicitySensor(CoordinatorEntity, SensorEntity):
                 return None
 
         if key == "grid_export":
-            val = self._get(data, "acTtlInpower") or self._get(data, "ctAcTtlInPower")
+            val = self._get(data, "acTtlInpower") or self._get(data, "acTtlInPower") or self._get(data, "ctAcTtlInPower")
             try:
                 val = float(val)
                 return val if val > 0 else 0

@@ -49,6 +49,27 @@ class FelicityCoordinator(DataUpdateCoordinator):
             _LOGGER.warning("Snapshot failed for %s: %s", device_sn, err)
             return {}
 
+
+    async def _safe_energy_flow(self, device_sn: str) -> Dict[str, Any]:
+        try:
+            raw = await self.api.get_energy_flow(device_sn)
+
+            if not isinstance(raw, dict):
+                return {}
+
+            if raw.get("status") in (400, 401, 403, 404, 500):
+                return {}
+
+            if raw.get("code") not in (None, 200):
+                return {}
+
+            data = raw.get("data", raw)
+            return data if isinstance(data, dict) else {}
+
+        except Exception as err:
+            _LOGGER.warning("Energy flow failed for %s: %s", device_sn, err)
+            return {}
+
     async def _safe_basic(self, device_sn: str) -> Dict[str, Any]:
         try:
             raw = await self.api.get_device_basic(device_sn)
@@ -165,16 +186,12 @@ class FelicityCoordinator(DataUpdateCoordinator):
         except Exception:
             return fallback
 
-    def _merge_device(
-        self,
-        list_device: Dict[str, Any],
-        basic: Dict[str, Any],
-        snapshot: Dict[str, Any],
-    ) -> Dict[str, Any]:
+    def _merge_device(self, *sources: Dict[str, Any]) -> Dict[str, Any]:
         merged = {}
-        merged.update(list_device or {})
-        merged.update(basic or {})
-        merged.update(snapshot or {})
+
+        for source in sources:
+            if isinstance(source, dict):
+                merged.update(source)
 
         if merged.get("deviceSn") is not None:
             merged["deviceSn"] = str(merged.get("deviceSn"))
@@ -237,7 +254,9 @@ class FelicityCoordinator(DataUpdateCoordinator):
         inverter["pv4Power"] = self._first(inverter.get("pv4Power"))
 
         inverter["acTtlInpower"] = self._first(
+            inverter.get("acTtlInPower"),
             inverter.get("acTtlInpower"),
+            inverter.get("totalAcTtlInPower"),
             inverter.get("ctPower"),
             inverter.get("ctAcTtlInPower"),
         )
@@ -271,6 +290,11 @@ class FelicityCoordinator(DataUpdateCoordinator):
             inverter.get("eBatDisCharToday"),
             inverter.get("ebatDisCharToday"),
         )
+
+        inverter["totalEnergy"] = self._first(inverter.get("totalEnergy"), inverter.get("ePvTotal"))
+        inverter["tempMax"] = self._first(inverter.get("tempMax"))
+        inverter["devTempMax"] = self._first(inverter.get("devTempMax"))
+        inverter["loadPercent"] = self._first(inverter.get("loadPercent"))
 
         inverter["workingMode"] = self._first(
             inverter.get("workModeStr"),
@@ -393,6 +417,24 @@ class FelicityCoordinator(DataUpdateCoordinator):
             battery_snapshot.get("ebatDisCharToday"),
         )
 
+        battery["remainingBatteryEnergy1"] = self._first(
+            battery_snapshot.get("remainingBatteryEnergy1"),
+            battery.get("remainingBatteryEnergy1"),
+            battery_snapshot.get("ratedEnergy"),
+            battery.get("ratedEnergy"),
+        )
+
+        battery["tempMax"] = self._first(battery_snapshot.get("tempMax"), battery.get("tempMax"))
+        battery["tempMin"] = self._first(battery_snapshot.get("tempMin"), battery.get("tempMin"))
+        battery["bmsState"] = self._first(battery_snapshot.get("bmsState"), battery.get("bmsState"))
+        battery["bmsChargingState"] = self._first(battery_snapshot.get("bmsChargingState"), battery.get("bmsChargingState"))
+        battery["maxVoltage2bms"] = self._first(battery_snapshot.get("maxVoltage2bms"), battery.get("maxVoltage2bms"))
+        battery["minVoltage2bms"] = self._first(battery_snapshot.get("minVoltage2bms"), battery.get("minVoltage2bms"))
+        battery["cellNumber"] = self._first(battery_snapshot.get("cellNumber"), battery.get("cellNumber"))
+        battery["batCount"] = self._first(battery_snapshot.get("batCount"), battery.get("batCount"))
+        battery["batLineCount"] = self._first(battery_snapshot.get("batLineCount"), battery.get("batLineCount"))
+        battery["ratedEnergy"] = self._first(battery_snapshot.get("ratedEnergy"), battery.get("ratedEnergy"))
+
         battery["workingMode"] = self._first(
             battery_snapshot.get("workModeStr"),
             battery_snapshot.get("operMStr"),
@@ -460,12 +502,14 @@ class FelicityCoordinator(DataUpdateCoordinator):
             _LOGGER.warning("Felicity auto battery_sn: %s", battery_sn)
 
             inverter_snapshot = await self._safe_snapshot(inverter_sn) if inverter_sn else {}
+            inverter_energy_flow = await self._safe_energy_flow(inverter_sn) if inverter_sn else {}
             inverter_basic = await self._safe_basic(inverter_sn) if inverter_sn else {}
 
             inverter = self._merge_device(
                 inverter_list,
                 inverter_basic,
                 inverter_snapshot,
+                inverter_energy_flow,
             )
 
             self._normalize_inverter(inverter)

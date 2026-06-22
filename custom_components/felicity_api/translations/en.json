@@ -23,41 +23,237 @@
   },
   "entity": {
     "sensor": {
-      "deviceSn": { "name": "Device Serial Number" },
-      "deviceModel": { "name": "Device Model" },
-      "deviceType": { "name": "Device Type" },
-      "subType": { "name": "Sub Type" },
-      "status": { "name": "Status" },
-      "firmwareVersion": { "name": "Firmware Version" },
-
-      "energyState": { "name": "Energy State" },
-      "workingMode": { "name": "Working Mode" },
-      "alarmCount": { "name": "Alarm Count" },
-      "alarmText": { "name": "Alarm Text" },
-
-      "pvTotalPower": { "name": "PV Power" },
-      "pv1Power": { "name": "PV String 1" },
-      "pv2Power": { "name": "PV String 2" },
-      "pv3Power": { "name": "PV String 3" },
-      "pv4Power": { "name": "PV String 4" },
-
-      "acTtlInpower": { "name": "Grid Power" },
-      "grid_import": { "name": "Grid Import" },
-      "grid_export": { "name": "Grid Export" },
-
-      "ctPower": { "name": "Load Power" },
-
-      "emsSoc": { "name": "Battery SOC" },
-      "emsPower": { "name": "Battery Power" },
-      "emsSoh": { "name": "Battery SOH" },
-      "emsCapacity": { "name": "Battery Capacity" },
-
-      "ePvToday": { "name": "PV Energy Today" },
-      "eToday": { "name": "Total Energy Today" },
-      "eGridFeedToday": { "name": "Grid Export Today" },
-      "eGridInToday": { "name": "Grid Import Today" },
-      "eBatCharToday": { "name": "Battery Charge Today" },
-      "eBatDisCharToday": { "name": "Battery Discharge Today" }
+      "deviceSn": {
+        "name": "Device Serial Number"
+      },
+      "deviceModel": {
+        "name": "Device Model"
+      },
+      "deviceType": {
+        "name": "Device Type"
+      },
+      "subType": {
+        "name": "Sub Type"
+      },
+      "status": {
+        "name": "Status"
+      },
+      "firmwareVersion": {
+        "name": "Firmware Version"
+      },
+      "energyState": {
+        "name": "Energy State"
+      },
+      "workingMode": {
+        "name": "Working Mode"
+      },
+      "alarmCount": {
+        "name": "Alarm Count"
+      },
+      "alarmText": {
+        "name": "Alarm Text"
+      },
+      "pvTotalPower": {
+        "name": "PV Power"
+      },
+      "pv1Power": {
+        "name": "PV String 1"
+      },
+      "pv2Power": {
+        "name": "PV String 2"
+      },
+      "pv3Power": {
+        "name": "PV String 3"
+      },
+      "pv4Power": {
+        "name": "PV String 4"
+      },
+      "acTtlInpower": {
+        "name": "Grid Power"
+      },
+      "grid_import": {
+        "name": "Grid Import"
+      },
+      "grid_export": {
+        "name": "Grid Export"
+      },
+      "ctPower": {
+        "name": "Load Power"
+      },
+      "emsSoc": {
+        "name": "Battery SOC"
+      },
+      "emsPower": {
+        "name": "Battery Power"
+      },
+      "emsSoh": {
+        "name": "Battery SOH"
+      },
+      "emsCapacity": {
+        "name": "Battery Capacity"
+      },
+      "ePvToday": {
+        "name": "PV Energy Today"
+      },
+      "eToday": {
+        "name": "Total Energy Today"
+      },
+      "eGridFeedToday": {
+        "name": "Grid Export Today"
+      },
+      "eGridInToday": {
+        "name": "Grid Import Today"
+      },
+      "eBatCharToday": {
+        "name": "Battery Charge Today"
+      },
+      "eBatDisCharToday": {
+        "name": "Battery Discharge Today"
+      },
+      "pvVolt": {
+        "name": "PV1 Voltage"
+      },
+      "pv2Volt": {
+        "name": "PV2 Voltage"
+      },
+      "pvInCurr": {
+        "name": "PV1 Current"
+      },
+      "pv2InCurr": {
+        "name": "PV2 Current"
+      },
+      "acRInVolt": {
+        "name": "Grid L1 Voltage"
+      },
+      "acSInVolt": {
+        "name": "Grid L2 Voltage"
+      },
+      "acTInVolt": {
+        "name": "Grid L3 Voltage"
+      },
+      "acRInCurr": {
+        "name": "Grid L1 Current"
+      },
+      "acSInCurr": {
+        "name": "Grid L2 Current"
+      },
+      "acTInCurr": {
+        "name": "Grid L3 Current"
+      },
+      "acRInFreq": {
+        "name": "Grid L1 Frequency"
+      },
+      "acSInFreq": {
+        "name": "Grid L2 Frequency"
+      },
+      "acTInFreq": {
+        "name": "Grid L3 Frequency"
+      },
+      "acROutVolt": {
+        "name": "Backup L1 Spannung"
+      },
+      "acSOutVolt": {
+        "name": "Backup L2 Spannung"
+      },
+      "acTOutVolt": {
+        "name": "Backup L3 Spannung"
+      },
+      "acROutCurr": {
+        "name": "Backup L1 Strom"
+      },
+      "acSOutCurr": {
+        "name": "Backup L2 Strom"
+      },
+      "acTOutCurr": {
+        "name": "Backup L3 Strom"
+      },
+      "acROutFreq": {
+        "name": "Backup L1 Frequenz"
+      },
+      "acSOutFreq": {
+        "name": "Backup L2 Frequenz"
+      },
+      "acTOutFreq": {
+        "name": "Backup L3 Frequenz"
+      },
+      "loadPercent": {
+        "name": "Load Percent"
+      },
+      "tempMax": {
+        "name": "Max Temperature"
+      },
+      "tempMin": {
+        "name": "Min Temperature"
+      },
+      "devTempMax": {
+        "name": "Max Device Temperature"
+      },
+      "totalEnergy": {
+        "name": "Total Energy"
+      },
+      "ePvMonth": {
+        "name": "PV Energie Monat"
+      },
+      "ePvYear": {
+        "name": "PV Energie Jahr"
+      },
+      "ePvTotal": {
+        "name": "PV Energie Gesamt"
+      },
+      "eGridFeedMonth": {
+        "name": "Einspeisung Monat"
+      },
+      "eGridFeedYear": {
+        "name": "Einspeisung Jahr"
+      },
+      "eGridFeedTotal": {
+        "name": "Einspeisung Gesamt"
+      },
+      "eBatCharMonth": {
+        "name": "Batterie Laden Monat"
+      },
+      "eBatCharYear": {
+        "name": "Batterie Laden Jahr"
+      },
+      "eBatCharTotal": {
+        "name": "Batterie Laden Gesamt"
+      },
+      "eBatDisCharMonth": {
+        "name": "Batterie Entladen Monat"
+      },
+      "eBatDisCharYear": {
+        "name": "Batterie Entladen Jahr"
+      },
+      "eBatDisCharTotal": {
+        "name": "Batterie Entladen Gesamt"
+      },
+      "remainingBatteryEnergy1": {
+        "name": "Remaining Battery Energy"
+      },
+      "ratedEnergy": {
+        "name": "Battery Rated Energy"
+      },
+      "bmsState": {
+        "name": "BMS Status"
+      },
+      "bmsChargingState": {
+        "name": "BMS Charging State"
+      },
+      "maxVoltage2bms": {
+        "name": "Max Cell Voltage"
+      },
+      "minVoltage2bms": {
+        "name": "Min Cell Voltage"
+      },
+      "cellNumber": {
+        "name": "Cell Count"
+      },
+      "batCount": {
+        "name": "Battery Count"
+      },
+      "batLineCount": {
+        "name": "Battery Lines"
+      }
     }
   }
 }

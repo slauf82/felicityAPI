@@ -14,6 +14,7 @@ from .const import (
     API_DEVICE_LIST,
     API_DEVICE_SNAPSHOT,
     API_DEVICE_BASIC,
+    API_DEVICE_ENERGY_FLOW,
 )
 
 PUBLIC_KEY = "MFwwDQYJKoZIhvcNAQEBBQADSwAwSAJBAK0GDivaRzIKeTmQnAxAYh2LChuHWDp0yHZ0zIvm+Eoi7J+rx7phqR7EtkBDO3HWqAXVkNDeeQaU32P5w1Q4FVUCAwEAAQ=="
@@ -165,6 +166,12 @@ class FelicityAPI:
         return await self._request(
             "GET",
             f"{API_DEVICE_BASIC}/{device_sn}",
+        )
+
+    async def get_energy_flow(self, device_sn: str) -> dict[str, Any]:
+        return await self._request(
+            "GET",
+            f"{API_DEVICE_ENERGY_FLOW}?deviceSN={device_sn}",
         )
 
     async def get_device_list(self) -> dict[str, Any]:
