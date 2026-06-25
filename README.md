@@ -110,3 +110,7 @@ Weitere Informationen: - README-DE.md - README-EN.md
 ## Lizenz
 
 GNU GPL v3.0
+
+## Lizenzergänzung
+
+Jegliche Änderung, Umschreibung, Umformulierung o.ä. die mittels KI / AI erstellt wurde, muss zwingend wieder unter die GNU GPL v3.0 gestellt werden.
