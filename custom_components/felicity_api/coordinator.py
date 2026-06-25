@@ -376,6 +376,66 @@ class FelicityCoordinator(DataUpdateCoordinator):
         inverter["alarmCount"] = inverter.get("warningCount") or 0
         inverter["alarmText"] = self._first(inverter.get("failCode"), "")
 
+
+    def _decode_bitmask(self, value, mapping: Dict[int, str]) -> str:
+        raw = self._as_float(value, None)
+
+        if raw is None:
+            return "unknown"
+
+        try:
+            number = int(raw)
+        except Exception:
+            return "unknown"
+
+        matches = [label for bit, label in mapping.items() if number & bit]
+        return ", ".join(matches) if matches else str(number)
+
+    def _decode_bms_state(self, value) -> str:
+        return self._decode_bitmask(
+            value,
+            {
+                8: "Voll erzwungen",
+                16: "Sofortladung 2",
+                32: "Sofortladung 1",
+                64: "Entladung erlaubt",
+                128: "Ladung erlaubt",
+                256: "Entladung MOS",
+                512: "Ladung MOS",
+                1024: "Entlade-Softstart MOS",
+                2048: "Lade-Softstart MOS",
+                4096: "Batterie entlädt",
+                8192: "Batterie lädt",
+            },
+        )
+
+    def _decode_work_mode(self, value) -> str:
+        mapping = {
+            "0": "Power-On-Modus",
+            "1": "Standby-Modus",
+            "2": "Batteriemodus",
+            "3": "Nur Entlademodus",
+            "4": "Nur Lademodus",
+            "5": "Niedrigenergie-Modus",
+            "6": "Fehlermodus",
+            "7": "Abschaltmodus",
+            "8": "Testmodus",
+            "9": "Update-Modus",
+        }
+        key = str(value) if value not in (None, "") else ""
+        return mapping.get(key, key or "unknown")
+
+    def _decode_heat_status(self, value) -> str:
+        mapping = {
+            "0": "Keine Heizung",
+            "1": "Wechsel zu Heizen",
+            "2": "Heizt",
+            "3": "Heizt und lädt",
+            "4": "Wechsel zu Nicht-Heizen",
+        }
+        key = str(value) if value not in (None, "") else ""
+        return mapping.get(key, key or "unknown")
+
     def _normalize_battery(
         self,
         battery: Dict[str, Any],
@@ -497,8 +557,38 @@ class FelicityCoordinator(DataUpdateCoordinator):
         battery["tempMin"] = self._first(battery_snapshot.get("tempMin"), battery.get("tempMin"))
         battery["bmsState"] = self._first(battery_snapshot.get("bmsState"), battery.get("bmsState"))
         battery["bmsChargingState"] = self._first(battery_snapshot.get("bmsChargingState"), battery.get("bmsChargingState"))
+        battery["bmsStateText"] = self._decode_bms_state(battery.get("bmsState"))
+        battery["bmsStateFlags"] = battery["bmsStateText"]
+
+        battery["workMode"] = self._first(battery_snapshot.get("workMode"), battery.get("workMode"))
+        battery["workModeText"] = self._first(
+            battery_snapshot.get("workModeStr"),
+            battery.get("workModeStr"),
+            self._decode_work_mode(battery.get("workMode")),
+        )
+
+        battery["heatStatus"] = self._first(battery_snapshot.get("heatStatus"), battery.get("heatStatus"))
+        battery["heatStatusText"] = self._first(
+            battery_snapshot.get("heatStatusStr"),
+            battery.get("heatStatusStr"),
+            self._decode_heat_status(battery.get("heatStatus")),
+        )
+
         battery["maxVoltage2bms"] = self._first(battery_snapshot.get("maxVoltage2bms"), battery.get("maxVoltage2bms"))
         battery["minVoltage2bms"] = self._first(battery_snapshot.get("minVoltage2bms"), battery.get("minVoltage2bms"))
+
+        max_cell = self._as_float(battery.get("maxVoltage2bms"), None)
+        min_cell = self._as_float(battery.get("minVoltage2bms"), None)
+        battery["cellVoltageDelta"] = round(max_cell - min_cell, 3) if max_cell is not None and min_cell is not None else None
+
+        battery["maxVoltageNum2bms"] = self._first(battery_snapshot.get("maxVoltageNum2bms"), battery.get("maxVoltageNum2bms"))
+        battery["minVoltageNum2bms"] = self._first(battery_snapshot.get("minVoltageNum2bms"), battery.get("minVoltageNum2bms"))
+        battery["maxCellTempNum"] = self._first(battery_snapshot.get("maxCellTempNum"), battery.get("maxCellTempNum"))
+        battery["minBattTempNum"] = self._first(battery_snapshot.get("minBattTempNum"), battery.get("minBattTempNum"))
+        battery["BMSLCVolt"] = self._first(battery_snapshot.get("BMSLCVolt"), battery.get("BMSLCVolt"))
+        battery["BMSLDVolt"] = self._first(battery_snapshot.get("BMSLDVolt"), battery.get("BMSLDVolt"))
+        battery["BMSLCCurr"] = self._first(battery_snapshot.get("BMSLCCurr"), battery.get("BMSLCCurr"))
+        battery["BMSLDCurr"] = self._first(battery_snapshot.get("BMSLDCurr"), battery.get("BMSLDCurr"))
         battery["cellNumber"] = self._first(battery_snapshot.get("cellNumber"), battery.get("cellNumber"))
         battery["batCount"] = self._first(battery_snapshot.get("batCount"), battery.get("batCount"))
         battery["batLineCount"] = self._first(battery_snapshot.get("batLineCount"), battery.get("batLineCount"))

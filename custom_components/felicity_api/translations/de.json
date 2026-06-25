@@ -274,6 +274,51 @@
       },
       "warningSummary": {
         "name": "Warnungen Übersicht"
+      },
+      "bmsStateText": {
+        "name": "BMS Status Text"
+      },
+      "bmsStateFlags": {
+        "name": "BMS Status Flags"
+      },
+      "workMode": {
+        "name": "Betriebsmodus Rohwert"
+      },
+      "workModeText": {
+        "name": "Betriebsmodus Text"
+      },
+      "heatStatus": {
+        "name": "Heizstatus Rohwert"
+      },
+      "heatStatusText": {
+        "name": "Heizstatus Text"
+      },
+      "cellVoltageDelta": {
+        "name": "Zellspannungsdifferenz"
+      },
+      "maxVoltageNum2bms": {
+        "name": "Zelle mit max. Spannung"
+      },
+      "minVoltageNum2bms": {
+        "name": "Zelle mit min. Spannung"
+      },
+      "maxCellTempNum": {
+        "name": "Zelle mit max. Temperatur"
+      },
+      "minBattTempNum": {
+        "name": "Zelle mit min. Temperatur"
+      },
+      "BMSLCVolt": {
+        "name": "BMS Ladeschlussspannung"
+      },
+      "BMSLDVolt": {
+        "name": "BMS Entladeschlussspannung"
+      },
+      "BMSLCCurr": {
+        "name": "BMS Ladestromgrenze"
+      },
+      "BMSLDCurr": {
+        "name": "BMS Entladestromgrenze"
       }
     }
   }

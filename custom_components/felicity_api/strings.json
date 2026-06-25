@@ -156,31 +156,31 @@
         "name": "Grid L3 Frequency"
       },
       "acROutVolt": {
-        "name": "Backup L1 Spannung"
+        "name": "Backup L1 Voltage"
       },
       "acSOutVolt": {
-        "name": "Backup L2 Spannung"
+        "name": "Backup L2 Voltage"
       },
       "acTOutVolt": {
-        "name": "Backup L3 Spannung"
+        "name": "Backup L3 Voltage"
       },
       "acROutCurr": {
-        "name": "Backup L1 Strom"
+        "name": "Backup L1 Current"
       },
       "acSOutCurr": {
-        "name": "Backup L2 Strom"
+        "name": "Backup L2 Current"
       },
       "acTOutCurr": {
-        "name": "Backup L3 Strom"
+        "name": "Backup L3 Current"
       },
       "acROutFreq": {
-        "name": "Backup L1 Frequenz"
+        "name": "Backup L1 Frequency"
       },
       "acSOutFreq": {
-        "name": "Backup L2 Frequenz"
+        "name": "Backup L2 Frequency"
       },
       "acTOutFreq": {
-        "name": "Backup L3 Frequenz"
+        "name": "Backup L3 Frequency"
       },
       "loadPercent": {
         "name": "Load Percent"
@@ -198,40 +198,40 @@
         "name": "Total Energy"
       },
       "ePvMonth": {
-        "name": "PV Energie Monat"
+        "name": "PV Energy Month"
       },
       "ePvYear": {
-        "name": "PV Energie Jahr"
+        "name": "PV Energy Year"
       },
       "ePvTotal": {
-        "name": "PV Energie Gesamt"
+        "name": "PV Energy Total"
       },
       "eGridFeedMonth": {
-        "name": "Einspeisung Monat"
+        "name": "Grid Export Month"
       },
       "eGridFeedYear": {
-        "name": "Einspeisung Jahr"
+        "name": "Grid Export Year"
       },
       "eGridFeedTotal": {
-        "name": "Einspeisung Gesamt"
+        "name": "Grid Export Total"
       },
       "eBatCharMonth": {
-        "name": "Batterie Laden Monat"
+        "name": "Battery Charge Month"
       },
       "eBatCharYear": {
-        "name": "Batterie Laden Jahr"
+        "name": "Battery Charge Year"
       },
       "eBatCharTotal": {
-        "name": "Batterie Laden Gesamt"
+        "name": "Battery Charge Total"
       },
       "eBatDisCharMonth": {
-        "name": "Batterie Entladen Monat"
+        "name": "Battery Discharge Month"
       },
       "eBatDisCharYear": {
-        "name": "Batterie Entladen Jahr"
+        "name": "Battery Discharge Year"
       },
       "eBatDisCharTotal": {
-        "name": "Batterie Entladen Gesamt"
+        "name": "Battery Discharge Total"
       },
       "remainingBatteryEnergy1": {
         "name": "Remaining Battery Energy"
@@ -280,6 +280,51 @@
       },
       "warningSummary": {
         "name": "Warning Summary"
+      },
+      "bmsStateText": {
+        "name": "BMS Status Text"
+      },
+      "bmsStateFlags": {
+        "name": "BMS Status Flags"
+      },
+      "workMode": {
+        "name": "Work Mode Raw"
+      },
+      "workModeText": {
+        "name": "Work Mode Text"
+      },
+      "heatStatus": {
+        "name": "Heat Status Raw"
+      },
+      "heatStatusText": {
+        "name": "Heat Status Text"
+      },
+      "cellVoltageDelta": {
+        "name": "Cell Voltage Delta"
+      },
+      "maxVoltageNum2bms": {
+        "name": "Cell with Max Voltage"
+      },
+      "minVoltageNum2bms": {
+        "name": "Cell with Min Voltage"
+      },
+      "maxCellTempNum": {
+        "name": "Cell with Max Temperature"
+      },
+      "minBattTempNum": {
+        "name": "Cell with Min Temperature"
+      },
+      "BMSLCVolt": {
+        "name": "BMS Charge Limit Voltage"
+      },
+      "BMSLDVolt": {
+        "name": "BMS Discharge Limit Voltage"
+      },
+      "BMSLCCurr": {
+        "name": "BMS Charge Current Limit"
+      },
+      "BMSLDCurr": {
+        "name": "BMS Discharge Current Limit"
       }
     }
   }
