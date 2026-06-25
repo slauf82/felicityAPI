@@ -1,226 +1,127 @@
-# Felicity API for Home Assistant
+# README-EN
 
-Custom Home Assistant integration for Felicity Solar Cloud devices.
+# Felicity API -- User Guide
 
-This integration connects directly to the Felicity Solar Cloud API and provides sensor data inside Home Assistant.
+## Welcome
 
-## Supported Areas
+Felicity API is a modern Home Assistant integration for monitoring
+Felicity Solar inverters and battery systems.
 
-- Inverters
-- Batteries
-- PV production
-- Grid import and export
-- Battery charging and discharging
-- Daily energy statistics
-- Device status
-- Diagnostic data
-
----
-
-## Current Project Status
-
-**Version:** `v1.0.0` 
-
-The integration is already usable for daily operation but is still under active development.
-
-The current version already includes dynamic device detection with serial-number-based sensor creation and a legacy fallback structure.
-
----
-
-## Already Functional
-
-- Central API layer
-- Central request handling
-- Central authentication handling
-- Token management
-- SSL handling workaround
-- Automatic device detection via `list_device_all_type`
-- Serial-number-based device assignment
-- Dynamic sensor creation per detected device
-- Legacy fallback for inverter and battery
-- Device separation inside Home Assistant
-- PV power sensors
-- Grid power sensors
-- Battery SOC and battery power
-- Daily energy statistics
-- HotJson parsing
-- Config flow setup
-- Home Assistant device registry support
-
----
-
-## Currently in Progress
-
-- Extended dynamic multi-device support
-- Support for multiple inverters
-- Support for multiple batteries
-- Improved sensor abstraction
-- Extended diagnostics
-- Options flow
-- HACS preparation
-- Code cleanup and optimization
-
----
+The integration focuses on providing a comprehensive **read-only**
+monitoring solution with advanced diagnostics and seamless Home
+Assistant integration.
 
 ## Features
 
-### Inverter Sensors
+### Inverter
 
-- Serial number
-- Device model
-- Device type
-- Firmware version
-- Device status
-- Operating mode
-- Energy state
-- Alarm count
-- Alarm text
-- Total PV power
-- PV string power
-- Grid power
-- Current grid import
-- Current grid export
-- House consumption
-- PV energy today
-- Total energy today
-- Grid import today
-- Grid export today
-- Battery charge today
-- Battery discharge today
+-   PV production
+-   Grid import / export
+-   Household consumption
+-   AC values
+-   Energy Flow
+-   Device status
+-   Firmware information
+-   Warning monitoring
+-   Live diagnostics
 
-### Battery Sensors
+### Battery
 
-- Serial number
-- Device model
-- Device type
-- Firmware version
-- Device status
-- Battery state of charge
-- Battery power
-- Battery voltage
-- Battery current
-- Battery health / SOH
-- Battery capacity
-- Battery charge today
-- Battery discharge today
-
----
-
-## Multi-Device Support
-
-The integration is designed to support multiple Felicity devices.
-
-Internally, devices returned by `list_device_all_type` are indexed by serial number and sensors are created dynamically per device.
-
-Currently tested with:
-
-- 1 inverter
-- 1 battery
-
-Community testing is still needed for:
-
-- multiple inverters
-- multiple batteries
-- larger mixed installations
-- different Felicity device models
-
----
+-   State of Charge (SOC)
+-   State of Health (SOH)
+-   Battery voltage
+-   Battery current
+-   Battery power
+-   Capacity
+-   Working Mode
+-   BMS Status
+-   BMS Flags
+-   Cell voltages
+-   Cell temperatures
+-   Warning information
+-   Advanced diagnostics
 
 ## Installation
 
-### Manual Installation
+### HACS
 
-Copy the integration folder to:
-/config/custom_components/felicity_api/
+1.  Add the custom repository.
+2.  Install **Felicity API**.
+3.  Restart Home Assistant.
+4.  Add the integration.
+5.  Enter your Felicity Cloud credentials.
 
-Then restart Home Assistant.
+### Manual
 
-# Configuration
+Copy the folder:
 
-The integration supports:
+`custom_components/felicity_api`
 
-* Username
-* Password
-* Optional inverter serial number
-* Optional battery serial number
+to
 
-Important
-Serial numbers are optional.
+`/config/custom_components/`
 
-The integration first attempts automatic device detection via the Felicity API device list.
+and restart Home Assistant.
 
-Manual serial numbers are only used as fallback.
+## Current Status
 
-SSL Notice
+The integration currently provides more than **120 Home Assistant
+entities**.
 
-Felicity currently uses SSL certificates that may not allow full certificate validation in some Home Assistant environments.
+Typical installation:
 
-Therefore, the integration currently uses a relaxed SSL context intentionally.
+-   Battery: \~50 entities
+-   Inverter: \~70 entities
 
-This is currently a compatibility workaround until Felicity improves their certificate chain or proper validation becomes reliably possible.
+## Warning Monitoring
 
-# Architecture
+Version 1.2 introduced cloud warning support, allowing Home Assistant
+automations and notifications based on inverter or battery warnings.
 
-The integration is currently transitioning from a fixed two-device structure to a dynamic multi-device architecture.
+## Advanced BMS Diagnostics
 
-The current internal structure includes:
+Version 1.3 significantly extends battery monitoring with:
 
-* central API layer
-* central request processing
-* central authentication management
-* central SSL management
-* coordinator-based device management
-* devices_by_sn as dynamic device base
-* legacy fallback for existing inverter/battery structure
+-   Working Mode
+-   BMS Status
+-   BMS Flags
+-   Cell voltage monitoring
+-   Cell temperature monitoring
+-   Extended battery diagnostics
 
-# Requirements
+## Roadmap
 
-The integration currently requires:
+### Version 1.4
 
-"requirements": [
-  "pycryptodomex"
-]
-Home Assistant Compatibility
+-   History API
+-   Daily statistics
+-   Monthly statistics
+-   Yearly statistics
 
-Tested with current Home Assistant versions including:
+### Version 1.5
 
-* 2025.x
-* 2026.x
+-   Write functions
+-   Device configuration
 
-# Known Limitations
-* Some Felicity API fields are undocumented.
-* API structures may vary depending on firmware generation.
-* SSL validation is currently intentionally relaxed.
-* Multi-device setups still require community testing.
-* Some sensors currently still use fallback mappings.
+## FAQ
 
-# Development Goals
+**Does the integration modify device settings?**
 
-Planned improvements:
+No. The integration is completely read-only.
 
-* Fully dynamic device management
-* Support for multiple inverters
-* Support for multiple batteries
-* Extended diagnostics
-* Cleaner sensor abstraction
-* Entity categories
-* Options flow
-* Device controls
-* Real-time/WebSocket support if possible
-* HACS release
-* Improved translations
-* Repair flow support
+**Does it require a Felicity Cloud account?**
 
-# Disclaimer
+Yes.
 
-This project is not affiliated with Felicity Solar and is not officially supported.
+**Is it HACS compatible?**
 
-Use at your own risk.
+Yes.
 
-Acknowledgements
-* Felicity Solar Cloud platform
-* Home Assistant Community
-* Reverse engineering and testing by the community
+## License
 
-# License
 GNU General Public License v3.0 (GPL-3.0)
+
+------------------------------------------------------------------------
+
+Thank you to everyone who contributed feedback, testing and ideas to
+improve this project.

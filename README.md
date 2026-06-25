@@ -1,58 +1,112 @@
-# Felicity API for Home Assistant
+# Felicity API
 
-Custom Home Assistant integration for Felicity Solar Cloud devices.
+> **Eine moderne Home-Assistant-Integration für Felicity Solar
+> Wechselrichter und Batteriesysteme**
 
----
+![Version](https://img.shields.io/badge/version-v1.3.0-blue) ![Home
+Assistant](https://img.shields.io/badge/Home%20Assistant-Compatible-success)
+![License](https://img.shields.io/badge/License-GPLv3-green)
+![Status](https://img.shields.io/badge/Status-Active-brightgreen)
 
-## Documentation
+## Überblick
 
-- German README: [README-de.md](README-de.md)
-- English README: [README-en.md](README-en.md)
+**Felicity API** ist eine Home-Assistant-Integration zur Überwachung von
+Felicity-Solar-Wechselrichtern und Batteriesystemen.
 
----
+Der Schwerpunkt liegt auf einer vollständig lesenden (Read-Only)
+Integration mit umfangreichen Diagnoseinformationen.
 
-## Features
+## Highlights
 
-- HACS compatible
-- Dynamic device detection
-- Inverter support
-- Battery support
-- Diagnostics support
-- Automatic serial number detection
-- Dynamic sensor creation
+-   Über 120 Home-Assistant-Entitäten
+-   Wechselrichter-Überwachung
+-   Batterie-Überwachung
+-   Energy-Flow-Daten
+-   Warnungen und Alarme
+-   Erweiterte BMS-Diagnose
+-   Login-Kompatibilitäts-Fallbacks
+-   HACS-kompatibel
 
----
+## Unterstützte Funktionen
+
+  Funktion                      Status
+  --------------------------- -----------
+  Live-Sensordaten                ✅
+  Batterieüberwachung             ✅
+  Wechselrichterüberwachung       ✅
+  Energy Flow                     ✅
+  Warnungen                       ✅
+  BMS-Diagnose                    ✅
+  Historische Daten            🚧 v1.4.0
+  Schreibfunktionen            🚧 v1.5.0
 
 ## Installation
 
-### HACS (recommended)
+### HACS
 
-Add custom repository:
+1.  Benutzerdefiniertes Repository hinzufügen.
+2.  Integration installieren.
+3.  Home Assistant neu starten.
+4.  Integration konfigurieren.
 
-https://github.com/slauf82/felicityAPI
+### Manuell
 
-Category:
+Den Ordner `custom_components/felicity_api` nach
+`/config/custom_components/` kopieren und Home Assistant neu starten.
 
-Integration
+## Aktueller Funktionsumfang (v1.3.0)
 
-Then install:
+### Batterie
 
-Felicity API
+-   SOC
+-   SOH
+-   Spannung
+-   Strom
+-   Leistung
+-   Kapazität
+-   Working Mode
+-   BMS-Status
+-   BMS-Flags
+-   Zellspannungen
+-   Zelltemperaturen
+-   Warnungen
+-   Diagnosewerte
 
----
+### Wechselrichter
 
-## License
+-   PV-Leistung
+-   Netzbezug / Einspeisung
+-   Hausverbrauch
+-   AC-Werte
+-   Energy Flow
+-   Gerätestatus
+-   Firmware
+-   Warnungen
 
-GNU General Public License v3.0 (GPL-3.0)
+## Roadmap
 
----
+### v1.4.0
 
-## Additional license information
+-   History API
+-   Tages-, Monats- und Jahreswerte
 
-AI-generated or AI-assisted products based on this project must also remain under the GPL 3.0 license.
+### v1.5.0
 
----
+-   Schreibfunktionen
+-   Gerätekonfiguration
 
-## Disclaimer
+## Changelog
 
-This project is not affiliated with Felicity Solar and is not officially supported.
+-   **v1.3.0** -- Erweiterte Batterie- und BMS-Diagnose
+-   **v1.2.1** -- Payload-Fallback
+-   **v1.2.0** -- Warnungen und Login-Kompatibilität
+-   **v1.1.0** -- Erweiterte Live-Sensoren
+-   **v1.0.0** -- Erste Veröffentlichung
+
+## Dokumentation
+
+Weitere Informationen: - README-DE.md - README-EN.md
+
+## Lizenz
+
+GNU GPL v3.0
