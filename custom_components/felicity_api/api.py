@@ -17,6 +17,7 @@ from .const import (
     API_DEVICE_ENERGY_FLOW,
     API_DEVICE_WARNINGS,
     API_DEVICE_WARNINGS_FALLBACK,
+    API_STORAGE_HISTORY_CHART,
 )
 
 PUBLIC_KEY = "MFwwDQYJKoZIhvcNAQEBBQADSwAwSAJBAK0GDivaRzIKeTmQnAxAYh2LChuHWDp0yHZ0zIvm+Eoi7J+rx7phqR7EtkBDO3HWqAXVkNDeeQaU32P5w1Q4FVUCAwEAAQ=="
@@ -232,6 +233,57 @@ class FelicityAPI:
             f"{API_DEVICE_ENERGY_FLOW}?deviceSN={device_sn}",
         )
 
+
+
+    async def get_history_chart(
+        self,
+        device_sn: str,
+        fields: list[str],
+        *,
+        label: str = "day",
+        date_str: str | None = None,
+    ) -> dict[str, Any]:
+        """Fetch Felicity chart/history data for one device.
+
+        The web UI uses ``/storageRealtimeData/chart_storageRealtimeData_mate``.
+        Felicity cloud builds have used slightly different request shapes, so we
+        try the most likely WEB payload variants in order. This keeps v1.4.0
+        tolerant if the API expects ``deviceSn`` or ``deviceSN`` / ``dateStr``
+        or ``date``.
+        """
+        request_date = date_str or datetime.now().strftime("%Y-%m-%d")
+        common = {
+            "fields": fields,
+            "label": label,
+            "dateStr": request_date,
+        }
+
+        payloads = [
+            {"deviceSn": str(device_sn), **common},
+            {"deviceSN": str(device_sn), **common},
+            {"deviceSn": str(device_sn), "date": request_date, "label": label, "fields": fields},
+            {"deviceSN": str(device_sn), "date": request_date, "label": label, "fields": fields},
+        ]
+
+        errors: list[str] = []
+
+        for payload in payloads:
+            try:
+                data = await self._request(
+                    "POST",
+                    API_STORAGE_HISTORY_CHART,
+                    json_payload=payload,
+                )
+            except Exception as err:
+                errors.append(str(err))
+                continue
+
+            if isinstance(data, dict) and data.get("code") in (None, 200):
+                return data
+
+            errors.append(str(data))
+
+        raise FelicityApiError("History chart endpoint failed: " + " | ".join(errors))
 
     async def get_warnings(self) -> dict[str, Any]:
         """Fetch device warnings using the historic Felicity typo and the corrected endpoint.

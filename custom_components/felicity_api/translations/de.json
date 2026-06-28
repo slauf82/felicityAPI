@@ -319,6 +319,69 @@
       },
       "BMSLDCurr": {
         "name": "BMS Entladestromgrenze"
+      },
+      "inverterHistoryTime": {
+        "name": "Inverter History Zeit"
+      },
+      "inverterHistoryPointCount": {
+        "name": "Inverter History Datenpunkte"
+      },
+      "inverterHistoryPvOutputKwh": {
+        "name": "Inverter PV-Ertrag History"
+      },
+      "inverterHistory_pvTotalPower": {
+        "name": "History PV-Leistung"
+      },
+      "inverterHistory_pvElectricity": {
+        "name": "History PV-Strom"
+      },
+      "inverterHistory_acTtlInpower": {
+        "name": "History AC-Eingangsleistung"
+      },
+      "inverterHistory_acTotalOutActPower": {
+        "name": "History AC-Ausgangsleistung"
+      },
+      "inverterHistory_emsPower": {
+        "name": "History Batterie/EMS-Leistung"
+      },
+      "inverterHistory_ctPower": {
+        "name": "History CT-Leistung"
+      },
+      "inverterHistory_meterPower": {
+        "name": "History Zählerleistung"
+      },
+      "batteryHistoryTime": {
+        "name": "Batterie History Zeit"
+      },
+      "batteryHistoryPointCount": {
+        "name": "Batterie History Datenpunkte"
+      },
+      "batteryHistoryPvOutputKwh": {
+        "name": "Batterie PV-Ertrag History"
+      },
+      "batteryHistory_battVolt": {
+        "name": "History Batteriespannung"
+      },
+      "batteryHistory_battCurr": {
+        "name": "History Batteriestrom"
+      },
+      "batteryHistory_bmsPower": {
+        "name": "History Batterieleistung"
+      },
+      "batteryHistory_battSoc": {
+        "name": "History Batterie SOC"
+      },
+      "batteryHistory_minVoltage2bms": {
+        "name": "History minimale Zellspannung"
+      },
+      "batteryHistory_maxVoltage2bms": {
+        "name": "History maximale Zellspannung"
+      },
+      "batteryHistory_tempMin": {
+        "name": "History Minimaltemperatur"
+      },
+      "batteryHistory_tempMax": {
+        "name": "History Maximaltemperatur"
       }
     }
   }

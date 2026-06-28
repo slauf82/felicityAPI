@@ -1,6 +1,6 @@
 from __future__ import annotations
 
-from datetime import timedelta
+from datetime import timedelta, datetime
 from typing import Any, Dict
 import logging
 import json
@@ -23,6 +23,8 @@ class FelicityCoordinator(DataUpdateCoordinator):
         )
         self.entry = entry
         self.api = api
+        self._history_cache: Dict[str, Dict[str, Any]] = {}
+        self._history_cache_time: Dict[str, datetime] = {}
 
     async def _safe_snapshot(self, device_sn: str) -> Dict[str, Any]:
         try:
@@ -69,6 +71,124 @@ class FelicityCoordinator(DataUpdateCoordinator):
         except Exception as err:
             _LOGGER.warning("Energy flow failed for %s: %s", device_sn, err)
             return {}
+
+
+    async def _safe_history_chart(self, device_sn: str, fields: list[str]) -> Dict[str, Any]:
+        try:
+            raw = await self.api.get_history_chart(device_sn, fields)
+
+            if not isinstance(raw, dict):
+                return {}
+
+            if raw.get("status") in (400, 401, 403, 404, 500):
+                return {}
+
+            if raw.get("code") not in (None, 200):
+                return {}
+
+            data = raw.get("data", raw)
+            return data if isinstance(data, dict) else {}
+
+        except Exception as err:
+            _LOGGER.warning("History chart failed for %s: %s", device_sn, err)
+            return {}
+
+    def _extract_history_last_values(self, history: Dict[str, Any], prefix: str) -> Dict[str, Any]:
+        if not isinstance(history, dict):
+            return {}
+
+        result: Dict[str, Any] = {}
+        result[f"{prefix}HistoryPvOutputKwh"] = history.get("pvOutputKwh")
+
+        data_times = history.get("dataTime") or []
+        entries = history.get("storageMateDTOS") or []
+
+        if not isinstance(data_times, list):
+            data_times = []
+
+        if not isinstance(entries, list):
+            entries = []
+
+        latest_index = None
+
+        for entry in entries:
+            if not isinstance(entry, dict):
+                continue
+
+            values = entry.get("data") or []
+            if not isinstance(values, list):
+                continue
+
+            for index in range(len(values) - 1, -1, -1):
+                if values[index] not in (None, "", "null", "unknown", "unavailable"):
+                    latest_index = index if latest_index is None else max(latest_index, index)
+                    break
+
+        if latest_index is not None and latest_index < len(data_times):
+            result[f"{prefix}HistoryTime"] = data_times[latest_index]
+
+        result[f"{prefix}HistoryPointCount"] = len(data_times) if data_times else None
+
+        for entry in entries:
+            if not isinstance(entry, dict):
+                continue
+
+            field = entry.get("field")
+            values = entry.get("data") or []
+
+            if not field or not isinstance(values, list):
+                continue
+
+            value = None
+            for item in reversed(values):
+                if item not in (None, "", "null", "unknown", "unavailable"):
+                    value = item
+                    break
+
+            if value is not None:
+                result[f"{prefix}History_{field}"] = value
+
+        return result
+
+    async def _get_history_for_device(self, device_sn: str, kind: str) -> Dict[str, Any]:
+        if not device_sn:
+            return {}
+
+        now = datetime.now()
+        cache_key = f"{kind}:{device_sn}"
+
+        last_update = self._history_cache_time.get(cache_key)
+
+        if last_update and now - last_update < timedelta(minutes=10):
+            return self._history_cache.get(cache_key, {})
+
+        if kind == "inverter":
+            fields = [
+                "pvTotalPower",
+                "pvElectricity",
+                "acTtlInpower",
+                "acTotalOutActPower",
+                "emsPower",
+                "ctPower",
+                "meterPower",
+            ]
+        else:
+            fields = [
+                "battVolt",
+                "battCurr",
+                "bmsPower",
+                "battSoc",
+                "minVoltage2bms",
+                "maxVoltage2bms",
+                "tempMin",
+                "tempMax",
+            ]
+
+        raw_history = await self._safe_history_chart(device_sn, fields)
+        parsed = self._extract_history_last_values(raw_history, kind)
+        self._history_cache[cache_key] = parsed
+        self._history_cache_time[cache_key] = now
+        return parsed
 
     async def _safe_basic(self, device_sn: str) -> Dict[str, Any]:
         try:
@@ -676,11 +796,14 @@ class FelicityCoordinator(DataUpdateCoordinator):
             inverter_energy_flow = await self._safe_energy_flow(inverter_sn) if inverter_sn else {}
             inverter_basic = await self._safe_basic(inverter_sn) if inverter_sn else {}
 
+            inverter_history = await self._get_history_for_device(inverter_sn, "inverter") if inverter_sn else {}
+
             inverter = self._merge_device(
                 inverter_list,
                 inverter_basic,
                 inverter_snapshot,
                 inverter_energy_flow,
+                inverter_history,
             )
 
             self._normalize_inverter(inverter)
@@ -693,10 +816,13 @@ class FelicityCoordinator(DataUpdateCoordinator):
                 battery_snapshot = await self._safe_snapshot(battery_sn)
                 battery_basic = await self._safe_basic(battery_sn)
 
+                battery_history = await self._get_history_for_device(battery_sn, "battery")
+
                 battery = self._merge_device(
                     battery_list,
                     battery_basic,
                     battery_snapshot,
+                    battery_history,
                 )
 
                 self._normalize_battery(

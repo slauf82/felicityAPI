@@ -41,6 +41,8 @@ STRING_KEYS = {
     "bmsStateFlags",
     "workModeText",
     "heatStatusText",
+    "inverterHistoryTime",
+    "batteryHistoryTime",
 }
 
 
@@ -362,6 +364,30 @@ SENSOR_MAP = {
     "batCount": SensorEntityDescription(key="batCount", translation_key="batCount", state_class=SensorStateClass.MEASUREMENT),
     "batLineCount": SensorEntityDescription(key="batLineCount", translation_key="batLineCount", state_class=SensorStateClass.MEASUREMENT),
 
+    # v1.4.0 History / chart last values
+    "inverterHistoryTime": SensorEntityDescription(key="inverterHistoryTime", translation_key="inverterHistoryTime"),
+    "inverterHistoryPointCount": SensorEntityDescription(key="inverterHistoryPointCount", translation_key="inverterHistoryPointCount", state_class=SensorStateClass.MEASUREMENT),
+    "inverterHistoryPvOutputKwh": _energy_sensor("inverterHistoryPvOutputKwh"),
+    "inverterHistory_pvTotalPower": _power_sensor("inverterHistory_pvTotalPower"),
+    "inverterHistory_pvElectricity": _current_sensor("inverterHistory_pvElectricity"),
+    "inverterHistory_acTtlInpower": _power_sensor("inverterHistory_acTtlInpower"),
+    "inverterHistory_acTotalOutActPower": _power_sensor("inverterHistory_acTotalOutActPower"),
+    "inverterHistory_emsPower": _power_sensor("inverterHistory_emsPower"),
+    "inverterHistory_ctPower": _power_sensor("inverterHistory_ctPower"),
+    "inverterHistory_meterPower": _power_sensor("inverterHistory_meterPower"),
+
+    "batteryHistoryTime": SensorEntityDescription(key="batteryHistoryTime", translation_key="batteryHistoryTime"),
+    "batteryHistoryPointCount": SensorEntityDescription(key="batteryHistoryPointCount", translation_key="batteryHistoryPointCount", state_class=SensorStateClass.MEASUREMENT),
+    "batteryHistoryPvOutputKwh": _energy_sensor("batteryHistoryPvOutputKwh"),
+    "batteryHistory_battVolt": _voltage_sensor("batteryHistory_battVolt"),
+    "batteryHistory_battCurr": _current_sensor("batteryHistory_battCurr"),
+    "batteryHistory_bmsPower": _power_sensor("batteryHistory_bmsPower"),
+    "batteryHistory_battSoc": SensorEntityDescription(key="batteryHistory_battSoc", translation_key="batteryHistory_battSoc", native_unit_of_measurement=PERCENTAGE, device_class=SensorDeviceClass.BATTERY, state_class=SensorStateClass.MEASUREMENT),
+    "batteryHistory_minVoltage2bms": _voltage_sensor("batteryHistory_minVoltage2bms"),
+    "batteryHistory_maxVoltage2bms": _voltage_sensor("batteryHistory_maxVoltage2bms"),
+    "batteryHistory_tempMin": _temperature_sensor("batteryHistory_tempMin"),
+    "batteryHistory_tempMax": _temperature_sensor("batteryHistory_tempMax"),
+
 }
 
 
@@ -436,6 +462,16 @@ INVERTER_KEYS = [
     "eBatDisCharMonth",
     "eBatDisCharYear",
     "eBatDisCharTotal",
+    "inverterHistoryTime",
+    "inverterHistoryPointCount",
+    "inverterHistoryPvOutputKwh",
+    "inverterHistory_pvTotalPower",
+    "inverterHistory_pvElectricity",
+    "inverterHistory_acTtlInpower",
+    "inverterHistory_acTotalOutActPower",
+    "inverterHistory_emsPower",
+    "inverterHistory_ctPower",
+    "inverterHistory_meterPower",
 ]
 
 BATTERY_KEYS = [
@@ -490,6 +526,17 @@ BATTERY_KEYS = [
     "cellNumber",
     "batCount",
     "batLineCount",
+    "batteryHistoryTime",
+    "batteryHistoryPointCount",
+    "batteryHistoryPvOutputKwh",
+    "batteryHistory_battVolt",
+    "batteryHistory_battCurr",
+    "batteryHistory_bmsPower",
+    "batteryHistory_battSoc",
+    "batteryHistory_minVoltage2bms",
+    "batteryHistory_maxVoltage2bms",
+    "batteryHistory_tempMin",
+    "batteryHistory_tempMax",
 ]
 
 
