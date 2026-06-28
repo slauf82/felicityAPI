@@ -29,6 +29,7 @@ API_DEVICE_BASIC = "/openApi/data/deviceDataBasic"
 API_DEVICE_ENERGY = "/openApi/data/deviceDataEnergy"
 API_DEVICE_ENERGY_FLOW = "/device/get_energy_flow"
 API_DEVICE_WARNINGS = "/device/warring/group"
+API_DEVICE_WARNINGS_FALLBACK = "/device/warnings/group"
 
 # =========================
 # DATA KEYS (Coordinator)

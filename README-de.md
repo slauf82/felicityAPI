@@ -1,154 +1,225 @@
-# README-DE
+# Felicity API für Home Assistant
 
-# Felicity API -- Deutsches Handbuch
+Benutzerdefinierte Home-Assistant-Integration für Felicity Solar Cloud Geräte.
 
-## Willkommen
+Diese Integration verbindet sich direkt mit der Felicity Solar Cloud API und stellt Sensordaten in Home Assistant bereit.
 
-Felicity API ist eine moderne Home-Assistant-Integration zur Überwachung
-von Felicity Solar Wechselrichtern und Batteriesystemen.
+## Unterstützte Bereiche
 
-Der Schwerpunkt liegt auf einer vollständig lesenden (Read-Only)
-Integration, die möglichst viele Informationen aus der offiziellen
-Felicity-Cloud in Home Assistant bereitstellt.
+- Wechselrichter
+- Batterien
+- PV-Produktion
+- Netzbezug und Einspeisung
+- Batterie-Laden und Entladen
+- Tages-Energiestatistiken
+- Gerätestatus
+- Diagnosedaten
 
-## Funktionsumfang
+---
 
-### Wechselrichter
+## Aktueller Projektstatus
 
--   PV-Leistung
--   AC-Leistung
--   Netzbezug / Einspeisung
--   Hausverbrauch
--   Gerätestatus
--   Firmware
--   Warnungen
--   Energy Flow
--   Live-Diagnosedaten
+**Version:** `v1.0.0`  
 
-### Batterie
+Die Integration ist bereits für den täglichen Einsatz nutzbar, befindet sich aber weiterhin in aktiver Entwicklung.
 
--   SOC
--   SOH (Batteriegesundheit)
--   Batteriespannung
--   Batteriestrom
--   Batterieleistung
--   Kapazität
--   Working Mode
--   BMS Status
--   BMS Flags
--   Zellspannungen
--   Zelltemperaturen
--   Warnungen
--   Erweiterte Diagnosewerte
+Der aktuelle Stand enthält bereits eine dynamische Geräteerkennung mit seriennummernbasierter Sensorerzeugung und Legacy-Fallback-Struktur.
+
+---
+
+## Bereits funktionsfähig
+
+- Zentrale API-Schicht
+- Zentrale Request-Verarbeitung
+- Zentrale Authentifizierung
+- Token-Handling
+- SSL-Handling-Workaround
+- Automatische Geräteerkennung über `list_device_all_type`
+- Seriennummernbasierte Gerätezuordnung
+- Dynamische Sensorerzeugung pro erkanntem Gerät
+- Legacy-Fallback für Wechselrichter und Batterie
+- Gerätegrennung innerhalb von Home Assistant
+- PV-Leistungssensoren
+- Netzleistungs-Sensoren
+- Batterie-SOC und Batterieleistung
+- Tägliche Energie-Statistiken
+- HotJson-Auswertung
+- Config-Flow Einrichtung
+- Home-Assistant-Geräteregistrierung
+
+---
+
+## Aktuell in Arbeit
+
+- Erweiterte dynamische Multi-Geräte-Unterstützung
+- Unterstützung mehrerer Wechselrichter
+- Unterstützung mehrerer Batterien
+- Verbesserte Sensor-Abstraktion
+- Erweiterte Diagnosefunktionen
+- Options-Flow
+- HACS-Vorbereitung
+- Code-Bereinigung und Optimierung
+
+---
+
+## Funktionen
+
+### Wechselrichter-Sensoren
+
+- Seriennummer
+- Gerätemodell
+- Gerätetyp
+- Firmware-Version
+- Gerätestatus
+- Betriebsmodus
+- Energiezustand
+- Alarmanzahl
+- Alarmtext
+- PV Gesamtleistung
+- PV String-Leistungen
+- Netzleistung
+- Netzbezug aktuell
+- Netzeinspeisung aktuell
+- Hausverbrauch
+- PV Energie heute
+- Gesamtenergie heute
+- Netzbezug heute
+- Netzeinspeisung heute
+- Batterie Laden heute
+- Batterie Entladen heute
+
+### Batterie-Sensoren
+
+- Seriennummer
+- Gerätemodell
+- Gerätetyp
+- Firmware-Version
+- Gerätestatus
+- Batterie-Ladezustand
+- Batterieleistung
+- Batteriespannung
+- Batteriestrom
+- Batterie-Gesundheit / SOH
+- Batteriekapazität
+- Batterie Laden heute
+- Batterie Entladen heute
+
+---
+
+## Unterstützung mehrerer Geräte
+
+Die Integration ist darauf ausgelegt, mehrere Felicity-Geräte gleichzeitig zu unterstützen.
+
+Intern werden Geräte aus `list_device_all_type` anhand ihrer Seriennummer indexiert und Sensoren dynamisch pro Gerät erzeugt.
+
+Aktuell getestet mit:
+
+- 1 Wechselrichter
+- 1 Batterie
+
+Community-Tests werden noch benötigt für:
+
+- mehrere Wechselrichter
+- mehrere Batterien
+- größere gemischte Anlagen
+- unterschiedliche Felicity-Gerätemodelle
+
+---
 
 ## Installation
 
-### HACS
-
-1.  Repository hinzufügen.
-2.  Felicity API installieren.
-3.  Home Assistant neu starten.
-4.  Integration hinzufügen.
-5.  Zugangsdaten eingeben.
-
 ### Manuelle Installation
 
-Den Ordner
+Den Integrationsordner nach folgendem Pfad kopieren:
+/config/custom_components/felicity_api/
 
-`custom_components/felicity_api`
+Anschließend Home Assistant neu starten.
 
-nach
+Konfiguration
 
-`/config/custom_components/`
+Die Integration unterstützt:
 
-kopieren und Home Assistant neu starten.
+* Benutzername
+* Passwort
+* Optionale Wechselrichter-Seriennummer
+* Optionale Batterie-Seriennummer
 
-## Einrichtung
+Wichtig
+Seriennummern sind optional.
 
-Nach der Installation erscheint die Integration unter **Einstellungen →
-Geräte & Dienste**.
+Die Integration versucht zuerst eine automatische Geräteerkennung über die Felicity API-Geräteliste.
 
-Es werden Benutzername und Passwort des Felicity-Cloud-Kontos benötigt.
+Manuelle Seriennummern dienen nur als Fallback.
 
-## Sensoren
+SSL-Hinweis
 
-### Batterie
+Felicity verwendet aktuell SSL-Zertifikate, die innerhalb mancher Home-Assistant-Umgebungen keine vollständige Zertifikatsvalidierung ermöglichen.
 
-Die Batterie stellt aktuell über 50 Entitäten bereit, unter anderem:
+Daher verwendet die Integration derzeit bewusst einen gelockerten SSL-Kontext.
 
--   Ladezustand (SOC)
--   Batteriegesundheit (SOH)
--   Spannung
--   Strom
--   Leistung
--   Working Mode
--   BMS-Diagnose
--   Warnungen
--   Zellspannungen
--   Zelltemperaturen
+Dies ist aktuell eine Kompatibilitätslösung, bis Felicity die Zertifikatskette verbessert oder eine saubere Validierung zuverlässig möglich ist.
 
-### Wechselrichter
+# Architektur
 
-Der Wechselrichter stellt derzeit rund 70 Entitäten bereit.
+Die Integration befindet sich im Übergang von einer festen Zwei-Geräte-Struktur zu einer dynamischen Multi-Geräte-Architektur.
 
-Dazu gehören:
+Der aktuelle interne Aufbau umfasst:
 
--   PV-Werte
--   Netzwerte
--   Verbrauch
--   Energy Flow
--   Firmware
--   Gerätestatus
--   Warnungen
+* zentrale API-Schicht
+* zentrale Request-Verarbeitung
+* zentrale Authentifizierungsverwaltung
+* zentrale SSL-Verwaltung
+* Coordinator-basierte Geräteverwaltung
+* devices_by_sn als dynamische Gerätebasis
+* Legacy-Fallback für bestehende Wechselrichter-/Batterie-Struktur
 
-## Warnungen
+# Anforderungen
 
-Seit Version 1.2.0 werden Warnungen aus der Felicity-Cloud ausgelesen.
+Die Integration benötigt aktuell:
 
-Diese können direkt für Automationen oder Benachrichtigungen verwendet
-werden.
+"requirements": [
+  "pycryptodomex"
+]
+Home Assistant Kompatibilität
 
-## BMS-Diagnose
+Getestet mit aktuellen Home-Assistant-Versionen einschließlich:
 
-Version 1.3.0 erweitert die Batterieüberwachung deutlich.
+* 2025.x
+* 2026.x
 
-Neue Informationen:
+# Bekannte Einschränkungen
+Einige Felicity API-Felder sind undokumentiert.
+API-Strukturen können sich je nach Firmware-Generation unterscheiden.
+SSL-Validierung ist aktuell bewusst gelockert.
+Multi-Geräte-Setups benötigen noch Community-Tests.
+Einige Sensoren verwenden derzeit noch Fallback-Mappings.
+Entwicklungsziele
 
--   Working Mode
--   BMS Status
--   BMS Flags
--   Zellspannungen
--   Zelltemperaturen
--   Diagnoseinformationen
+# Geplante Verbesserungen:
 
-## Roadmap
+* Vollständig dynamische Geräteverwaltung
+* Unterstützung mehrerer Wechselrichter
+* Unterstützung mehrerer Batterien
+* Erweiterte Diagnosefunktionen
+* Sauberere Sensor-Abstraktion
+* Entity-Kategorien
+* Options-Flow
+* Gerätesteuerungen
+* Echtzeit-/WebSocket-Unterstützung, falls möglich
+* HACS-Release
+* Verbesserte Übersetzungen
+* Repair-Flow-Unterstützung
 
-### Version 1.4.0
+# Haftungsausschluss
 
--   History API
--   Tageswerte
--   Monatswerte
--   Jahreswerte
+Dieses Projekt steht in keiner Verbindung zu Felicity Solar und wird nicht offiziell unterstützt.
 
-### Version 1.5.0
+Verwendung auf eigene Verantwortung.
 
--   Schreibfunktionen
--   Gerätekonfiguration
+# Danksagung
+* Felicity Solar Cloud Plattform
+* Home Assistant Community
+* Reverse Engineering und Tests durch die Community
 
-## FAQ
-
-**Werden Einstellungen verändert?**
-
-Nein. Die Integration arbeitet ausschließlich lesend.
-
-**Werden Cloud-Zugangsdaten benötigt?**
-
-Ja.
-
-**Ist die Integration HACS-kompatibel?**
-
-Ja.
-
-## Lizenz
-
-GNU GPL v3.0
+# Lizenz
+GNU General Public License v3.0 (GPL-3.0)

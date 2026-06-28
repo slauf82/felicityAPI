@@ -16,6 +16,7 @@ from .const import (
     API_DEVICE_BASIC,
     API_DEVICE_ENERGY_FLOW,
     API_DEVICE_WARNINGS,
+    API_DEVICE_WARNINGS_FALLBACK,
 )
 
 PUBLIC_KEY = "MFwwDQYJKoZIhvcNAQEBBQADSwAwSAJBAK0GDivaRzIKeTmQnAxAYh2LChuHWDp0yHZ0zIvm+Eoi7J+rx7phqR7EtkBDO3HWqAXVkNDeeQaU32P5w1Q4FVUCAwEAAQ=="
@@ -233,10 +234,35 @@ class FelicityAPI:
 
 
     async def get_warnings(self) -> dict[str, Any]:
-        return await self._request(
-            "GET",
-            API_DEVICE_WARNINGS,
-        )
+        """Fetch device warnings using the historic Felicity typo and the corrected endpoint.
+
+        Felicity currently exposes the warning endpoint with the misspelled
+        ``warring`` path. If the cloud API is corrected to ``warnings`` later,
+        this fallback keeps warning sensors populated instead of silently
+        becoming empty.
+        """
+        errors: list[str] = []
+
+        for endpoint in (API_DEVICE_WARNINGS, API_DEVICE_WARNINGS_FALLBACK):
+            try:
+                data = await self._request("GET", endpoint)
+            except Exception as err:
+                errors.append(f"{endpoint}: {err}")
+                continue
+
+            if not isinstance(data, dict):
+                errors.append(f"{endpoint}: invalid response {data}")
+                continue
+
+            # Treat normal Felicity success as final. A not-found / unsupported
+            # response on the old typo endpoint falls through to the corrected
+            # spelling.
+            if data.get("code") in (None, 200):
+                return data
+
+            errors.append(f"{endpoint}: {data}")
+
+        raise FelicityApiError("Warnings endpoint failed for all supported spellings: " + " | ".join(errors))
 
     async def get_device_list(self) -> dict[str, Any]:
         return await self.list_device_all_type()

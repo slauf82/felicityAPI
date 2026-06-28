@@ -100,7 +100,13 @@ class FelicityCoordinator(DataUpdateCoordinator):
             if not isinstance(data, dict):
                 return []
 
-            warnings = data.get("dataList", []) or []
+            warnings = self._first(
+                data.get("dataList"),
+                data.get("warningList"),
+                data.get("warnings"),
+                data.get("warrings"),
+                [],
+            ) or []
             return [item for item in warnings if isinstance(item, dict)]
 
         except Exception as err:
@@ -139,14 +145,20 @@ class FelicityCoordinator(DataUpdateCoordinator):
 
         device["activeWarningCount"] = len(active_warnings)
         device["lastWarningName"] = self._first(latest.get("warringName"), latest.get("warningName"), "")
-        device["lastWarningCode"] = self._first(latest.get("warnCode"), "")
-        device["lastWarningLevel"] = self._first(latest.get("level"), "")
-        device["lastWarningType"] = self._first(latest.get("warringTypeStr"), latest.get("warringType"), "")
-        device["lastWarningTime"] = self._first(latest.get("dataTimeStr"), latest.get("createDateStr"), "")
+        device["lastWarningCode"] = self._first(latest.get("warnCode"), latest.get("warningCode"), latest.get("code"), "")
+        device["lastWarningLevel"] = self._first(latest.get("level"), latest.get("warningLevel"), "")
+        device["lastWarningType"] = self._first(
+            latest.get("warringTypeStr"),
+            latest.get("warningTypeStr"),
+            latest.get("warringType"),
+            latest.get("warningType"),
+            "",
+        )
+        device["lastWarningTime"] = self._first(latest.get("dataTimeStr"), latest.get("warningTimeStr"), latest.get("createDateStr"), "")
 
         if active_warnings:
             device["warningSummary"] = "; ".join(
-                str(self._first(warning.get("warringName"), warning.get("warnCode"), "Warnung"))
+                str(self._first(warning.get("warringName"), warning.get("warningName"), warning.get("warnCode"), warning.get("warningCode"), "Warnung"))
                 for warning in active_warnings[:5]
             )
         else:
