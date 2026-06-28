@@ -1,3 +1,10 @@
+
+
+## Official Felicity Documentation
+
+- Web Manual: https://om.felicitysolar.com/vue/1.html
+- App Manual: https://shine.felicitysolar.com/app_operation_manualen.html
+
 # Felicity API für Home Assistant
 
 Benutzerdefinierte Home-Assistant-Integration für Felicity Solar Cloud Geräte.
