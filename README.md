@@ -63,3 +63,10 @@ AI-generated or AI-assisted products based on this project must also remain unde
 ## Disclaimer
 
 This project is not affiliated with Felicity Solar and is not officially supported.
+
+## v1.4.2
+
+- Fixed History/Chart parsing for Felicity web history responses.
+- Uses `xaxis` as the chart timeline and the latest non-empty data point as sensor state.
+- Added robust fallback parsing for table-style `dataList` history responses.
+

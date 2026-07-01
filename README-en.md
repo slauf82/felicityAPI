@@ -231,3 +231,10 @@ Acknowledgements
 
 # License
 GNU General Public License v3.0 (GPL-3.0)
+
+## v1.4.2
+
+- Fixed History/Chart parsing for Felicity web history responses.
+- Uses `xaxis` as the chart timeline and the latest non-empty data point as sensor state.
+- Added robust fallback parsing for table-style `dataList` history responses.
+

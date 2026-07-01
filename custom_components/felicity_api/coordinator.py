@@ -93,23 +93,64 @@ class FelicityCoordinator(DataUpdateCoordinator):
             _LOGGER.warning("History chart failed for %s: %s", device_sn, err)
             return {}
 
+    def _is_history_value(self, value: Any) -> bool:
+        return value not in (None, "", "null", "unknown", "unavailable")
+
     def _extract_history_last_values(self, history: Dict[str, Any], prefix: str) -> Dict[str, Any]:
+        """Extract Home Assistant sensor states from Felicity history responses.
+
+        The Felicity web app exposes history in two related shapes:
+
+        * chart history: ``storageMateDTOS`` with one ``data`` list per field and
+          the timeline in ``xaxis`` (not ``dataTime``).
+        * table history: ``dataList`` with one dict per timestamp.
+
+        v1.4.2 handles both shapes and uses the latest non-empty value as the
+        sensor state. This avoids empty sensors when the cloud returns chart
+        data exactly as shown in the History/Geschichte tab of the web app.
+        """
         if not isinstance(history, dict):
             return {}
 
         result: Dict[str, Any] = {}
-        result[f"{prefix}HistoryPvOutputKwh"] = history.get("pvOutputKwh")
 
-        data_times = history.get("dataTime") or []
-        entries = history.get("storageMateDTOS") or []
+        if self._is_history_value(history.get("pvOutputKwh")):
+            result[f"{prefix}HistoryPvOutputKwh"] = history.get("pvOutputKwh")
 
+        chart_result = self._extract_chart_history_last_values(history, prefix)
+        table_result = self._extract_table_history_last_values(history, prefix)
+
+        result.update(chart_result)
+
+        # If the chart endpoint returns no useful data, use the table-style
+        # history. If both exist, chart values win because they match the web
+        # app chart subtabs most closely.
+        for key, value in table_result.items():
+            result.setdefault(key, value)
+
+        return result
+
+    def _extract_chart_history_last_values(self, history: Dict[str, Any], prefix: str) -> Dict[str, Any]:
+        result: Dict[str, Any] = {}
+
+        entries = history.get("storageMateDTOS") or history.get("mateDTOS") or []
+        if not isinstance(entries, list):
+            return result
+
+        # The real Felicity chart response uses xaxis. dataTime is kept as a
+        # compatibility fallback for older assumptions / cloud variants.
+        data_times = (
+            history.get("xaxis")
+            or history.get("xAxis")
+            or history.get("dataTime")
+            or history.get("dataTimes")
+            or []
+        )
         if not isinstance(data_times, list):
             data_times = []
 
-        if not isinstance(entries, list):
-            entries = []
-
         latest_index = None
+        max_points = 0
 
         for entry in entries:
             if not isinstance(entry, dict):
@@ -119,15 +160,22 @@ class FelicityCoordinator(DataUpdateCoordinator):
             if not isinstance(values, list):
                 continue
 
+            max_points = max(max_points, len(values))
+
             for index in range(len(values) - 1, -1, -1):
-                if values[index] not in (None, "", "null", "unknown", "unavailable"):
+                if self._is_history_value(values[index]):
                     latest_index = index if latest_index is None else max(latest_index, index)
                     break
 
-        if latest_index is not None and latest_index < len(data_times):
-            result[f"{prefix}HistoryTime"] = data_times[latest_index]
+        if latest_index is not None:
+            if latest_index < len(data_times):
+                result[f"{prefix}HistoryTime"] = data_times[latest_index]
+            elif data_times:
+                result[f"{prefix}HistoryTime"] = data_times[-1]
 
-        result[f"{prefix}HistoryPointCount"] = len(data_times) if data_times else None
+        point_count = len(data_times) if data_times else max_points
+        if point_count:
+            result[f"{prefix}HistoryPointCount"] = point_count
 
         for entry in entries:
             if not isinstance(entry, dict):
@@ -141,12 +189,64 @@ class FelicityCoordinator(DataUpdateCoordinator):
 
             value = None
             for item in reversed(values):
-                if item not in (None, "", "null", "unknown", "unavailable"):
+                if self._is_history_value(item):
                     value = item
                     break
 
             if value is not None:
                 result[f"{prefix}History_{field}"] = value
+
+        return result
+
+    def _extract_table_history_last_values(self, history: Dict[str, Any], prefix: str) -> Dict[str, Any]:
+        result: Dict[str, Any] = {}
+
+        data_list = history.get("dataList") or []
+        if not isinstance(data_list, list) or not data_list:
+            nested_data = history.get("data")
+            if isinstance(nested_data, dict):
+                data_list = nested_data.get("dataList") or []
+
+        if not isinstance(data_list, list) or not data_list:
+            return result
+
+        rows = [row for row in data_list if isinstance(row, dict)]
+        if not rows:
+            return result
+
+        # list_storageRealtimeData_new is usually newest first, but sort-like
+        # selection by dataTime/createTime keeps this robust.
+        def row_time(row: Dict[str, Any]) -> str:
+            return str(self._first(row.get("dataTime"), row.get("deviceDataTime"), row.get("createTime"), row.get("createTimeStr"), ""))
+
+        latest_row = max(rows, key=row_time)
+
+        result[f"{prefix}HistoryPointCount"] = len(rows)
+        latest_time = self._first(
+            latest_row.get("dataTimeStr"),
+            latest_row.get("deviceDataTime"),
+            latest_row.get("dataTime"),
+            latest_row.get("createTimeStr"),
+            latest_row.get("createTime"),
+        )
+        if self._is_history_value(latest_time):
+            result[f"{prefix}HistoryTime"] = latest_time
+
+        for field, value in latest_row.items():
+            if self._is_history_value(value) and not isinstance(value, (dict, list)):
+                result[f"{prefix}History_{field}"] = value
+
+        extend_params = latest_row.get("extendParams")
+        if isinstance(extend_params, dict):
+            for field, value in extend_params.items():
+                if self._is_history_value(value) and not isinstance(value, (dict, list)):
+                    result.setdefault(f"{prefix}History_{field}", value)
+
+        batt_info_entity = latest_row.get("battInfoEntity")
+        if isinstance(batt_info_entity, dict):
+            for field, value in batt_info_entity.items():
+                if self._is_history_value(value) and not isinstance(value, (dict, list)):
+                    result.setdefault(f"{prefix}History_{field}", value)
 
         return result
 

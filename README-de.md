@@ -230,3 +230,10 @@ Verwendung auf eigene Verantwortung.
 
 # Lizenz
 GNU General Public License v3.0 (GPL-3.0)
+
+## v1.4.2
+
+- History-/Chart-Auswertung für die Felicity-Web-History korrigiert.
+- Nutzt `xaxis` als Zeitachse und den letzten nicht-leeren Datenpunkt als Sensorwert.
+- Robuster Fallback für tabellarische `dataList`-History-Antworten ergänzt.
+

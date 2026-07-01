@@ -258,11 +258,23 @@ class FelicityAPI:
             "dateStr": request_date,
         }
 
+        comma_fields = ",".join(fields)
+
         payloads = [
+            # Current WEB shape observed in the Felicity History/Geschichte tab.
             {"deviceSn": str(device_sn), **common},
             {"deviceSN": str(device_sn), **common},
+            # Cloud variants seen across Felicity endpoints / frontend builds.
             {"deviceSn": str(device_sn), "date": request_date, "label": label, "fields": fields},
             {"deviceSN": str(device_sn), "date": request_date, "label": label, "fields": fields},
+            {"deviceSn": str(device_sn), "date": request_date, "timeType": label, "fields": fields},
+            {"deviceSN": str(device_sn), "date": request_date, "timeType": label, "fields": fields},
+            {"deviceSn": str(device_sn), "queryDate": request_date, "dateType": label, "fields": fields},
+            {"deviceSN": str(device_sn), "queryDate": request_date, "dateType": label, "fields": fields},
+            {"deviceSn": str(device_sn), "dateStr": request_date, "label": label, "fieldList": fields},
+            {"deviceSN": str(device_sn), "dateStr": request_date, "label": label, "fieldList": fields},
+            {"deviceSn": str(device_sn), "dateStr": request_date, "label": label, "fields": comma_fields},
+            {"deviceSN": str(device_sn), "dateStr": request_date, "label": label, "fields": comma_fields},
         ]
 
         errors: list[str] = []
