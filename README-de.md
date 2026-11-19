@@ -26,7 +26,7 @@ Diese Integration verbindet sich direkt mit der Felicity Solar Cloud API und ste
 
 ## Aktueller Projektstatus
 
-**Version:** `v1.0.0`  
+**Version:** `v1.4.5`  
 
 Die Integration ist bereits für den täglichen Einsatz nutzbar, befindet sich aber weiterhin in aktiver Entwicklung.
 
@@ -261,9 +261,12 @@ Verwendung auf eigene Verantwortung.
 # Lizenz
 GNU General Public License v3.0 (GPL-3.0)
 
-## v1.4.2
+## v1.4.5
 
-- History-/Chart-Auswertung für die Felicity-Web-History korrigiert.
-- Nutzt `xaxis` als Zeitachse und den letzten nicht-leeren Datenpunkt als Sensorwert.
-- Robuster Fallback für tabellarische `dataList`-History-Antworten ergänzt.
-
+- Anonymisierten Diagnoseexport über Home Assistants Funktion „Diagnose herunterladen“ ergänzt.
+- Strukturierte Informationen über erkannte Gerätetypen, API-/Sensorfelder und History-Diagnose bereitgestellt.
+- Keine automatische Übermittlung der Diagnosedaten; vor dem Teilen bitte die JSON-Datei prüfen.
+- Erweiterte Erkennung mehrerer Geräte und zusätzliche Modellkennungen, einschließlich M1-1600 und IVAM (weitere Praxistests erforderlich).
+- SSL-Initialisierung und Fehlerdiagnose für History-Abfragen verbessert.
+- History-/Chart-Auswertung aus v1.4.2 mit `xaxis`-Zeitachse und `dataList`-Fallback weiterhin enthalten.
+- Die Integration bleibt ausschließlich lesend; Schreiboperationen werden noch nicht unterstützt.
