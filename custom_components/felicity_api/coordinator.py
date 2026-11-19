@@ -423,6 +423,9 @@ class FelicityCoordinator(DataUpdateCoordinator):
             if not isinstance(dev, dict):
                 continue
 
+            model = str(dev.get("deviceModel") or "").upper()
+            if ("M1-1600" in model or "LUX-S-1600" in model):
+                continue
             if str(dev.get("deviceType") or "").upper() == DEVICE_TYPE_INVERTER:
                 return dev
 
@@ -447,7 +450,8 @@ class FelicityCoordinator(DataUpdateCoordinator):
             if not isinstance(dev, dict):
                 continue
 
-            if str(dev.get("deviceType") or "").upper() == DEVICE_TYPE_BATTERY:
+            model = str(dev.get("deviceModel") or "").upper()
+            if str(dev.get("deviceType") or "").upper() == DEVICE_TYPE_BATTERY or "M1-1600" in model or "LUX-S-1600" in model:
                 return dev
 
         for dev in device_list:
@@ -1008,6 +1012,32 @@ class FelicityCoordinator(DataUpdateCoordinator):
             }
             
             devices_by_sn = {}
+
+            # Add additional discovered devices without overwriting the legacy
+            # primary inverter/battery. Each device has its own stable serial.
+            for extra in list_data:
+                if not isinstance(extra, dict):
+                    continue
+                extra_sn = str(extra.get("deviceSn") or "")
+                if not extra_sn or extra_sn in {inverter_sn, battery_sn}:
+                    continue
+                model = str(extra.get("deviceModel") or extra.get("model") or "").upper()
+                dtype = str(extra.get("deviceType") or "").upper()
+                is_battery = dtype == DEVICE_TYPE_BATTERY or model.startswith("LUX") or "M1-1600" in model
+                is_inverter = dtype == DEVICE_TYPE_INVERTER or model.startswith(("IVGM", "IVAM"))
+                if not (is_battery or is_inverter):
+                    continue
+                extra_snapshot = await self._safe_snapshot(extra_sn)
+                extra_basic = await self._safe_basic(extra_sn)
+                extra_history = await self._get_history_for_device(extra_sn, "battery" if is_battery else "inverter")
+                extra_device = self._merge_device(extra, extra_basic, extra_snapshot, extra_history)
+                if is_battery:
+                    self._normalize_battery(extra_device, extra_snapshot, {}, extra_sn)
+                else:
+                    extra_flow = await self._safe_energy_flow(extra_sn)
+                    extra_device.update({k: v for k, v in extra_flow.items() if k not in extra_device or extra_device[k] is None})
+                    self._normalize_inverter(extra_device)
+                devices_by_sn[extra_sn] = extra_device
 
             if inverter_sn and inverter:
                 devices_by_sn[str(inverter_sn)] = inverter

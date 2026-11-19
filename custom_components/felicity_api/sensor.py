@@ -546,7 +546,10 @@ def _device_kind_from_data(data: dict) -> str:
     model = str(data.get("deviceModel") or "").upper()
     type_name = str(data.get("type") or "").upper()
 
-    if device_type == DEVICE_TYPE_INVERTER or "IVGM" in model or "IVGM" in type_name:
+    if "M1-1600" in model or "LUX-S-1600" in model:
+        return "battery"
+
+    if device_type == DEVICE_TYPE_INVERTER or "IVGM" in model or "IVAM" in model or "IVGM" in type_name:
         return "inverter"
 
     if (
@@ -593,7 +596,9 @@ async def async_setup_entry(hass, entry, async_add_entities):
                 continue
 
             kind = _device_kind_from_data(device_data)
-            keys = _keys_for_kind(kind)
+            keys = list(_keys_for_kind(kind))
+            if kind == "battery" and any(device_data.get(k) is not None for k in ("pv1Power", "pv2Power", "pvTotalPower")):
+                keys.extend(k for k in ("pv1Power", "pv2Power", "pvTotalPower") if k not in keys)
 
             for key in keys:
                 desc = SENSOR_MAP.get(key)
@@ -701,11 +706,11 @@ class FelicitySensor(CoordinatorEntity, SensorEntity):
         sn = data.get("deviceSn") or self._device_sn or self._device_kind
 
         if self._device_kind == "inverter":
-            model = data.get("deviceModel") or "IVGM100600"
+            model = data.get("deviceModel") or "Unknown inverter"
             model_id = "OC"
 
         elif self._device_kind == "battery":
-            model = data.get("deviceModel") or "LUX-X-96050HG01"
+            model = data.get("deviceModel") or "Unknown battery"
             model_id = "BP"
             
         else:
