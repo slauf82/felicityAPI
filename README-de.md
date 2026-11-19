@@ -133,6 +133,36 @@ Community-Tests werden noch benötigt für:
 
 ---
 
+## Fehler melden und Diagnosedaten bereitstellen
+
+Du hast einen Fehler entdeckt, dein Felicity-Gerät wird nicht vollständig erkannt oder dir fehlen bestimmte Sensoren?
+
+Dann kannst du die Weiterentwicklung der Felicity API unterstützen!
+
+### Diagnosedaten erstellen
+
+Ab Version **v1.4.5** unterstützt die Integration den anonymisierten Diagnoseexport von Home Assistant.
+
+1. Öffne **Einstellungen → Geräte & Dienste → Integrationen**.
+2. Wähle **Felicity API** aus.
+3. Klicke im Menü auf **Diagnose herunterladen**.
+4. Prüfe die heruntergeladene JSON-Datei auf persönliche Informationen.
+5. Erstelle ein [GitHub-Issue](https://github.com/slauf82/felicityAPI/issues) oder ergänze ein bestehendes Issue und hänge die Diagnosedatei an.
+
+### Was sollte deine Fehlermeldung enthalten?
+
+- Verwendetes Felicity-Gerätemodell
+- Version der Felicity-API-Integration
+- Beschreibung des Problems oder der gewünschten Erweiterung
+- Betroffene Sensoren oder Funktionen
+- Optional: anonymisierte Diagnosedatei
+
+**Datenschutz:** Die Diagnosedaten werden nicht automatisch an den Entwickler übertragen. Bitte überprüfe die Datei vor dem Hochladen, insbesondere bei öffentlichen GitHub-Issues.
+
+Vielen Dank für deine Unterstützung! Deine Rückmeldungen helfen dabei, die Integration zu verbessern und weitere Felicity-Solar-Geräte zu unterstützen.
+
+---
+
 ## Installation
 
 ### Manuelle Installation
