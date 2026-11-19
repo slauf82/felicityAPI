@@ -11,6 +11,13 @@ TO_REDACT = {
     "token",
     "accessToken",
     "refreshToken",
+    "username",
+    "deviceSn",
+    "device_sn",
+    "serialNumber",
+    "serial",
+    "email",
+    "phone",
 }
 
 
@@ -28,10 +35,9 @@ async def async_get_config_entry_diagnostics(
             "data": dict(entry.data),
             "options": dict(entry.options),
         },
-        "devices": data.get("devices"),
-        "devices_by_sn": data.get("devices_by_sn"),
-        "devices_all": data.get("devices_all"),
-        "snapshot": data.get("snapshot"),
+        "device_count": len(data.get("devices_all") or []),
+        "device_types": sorted({str(d.get("deviceType") or "unknown") for d in (data.get("devices_all") or []) if isinstance(d, dict)}),
+        "history_diagnostics": list(coordinator.history_diagnostics.values()),
     }
 
     return async_redact_data(diagnostics, TO_REDACT)

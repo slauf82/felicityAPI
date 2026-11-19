@@ -25,6 +25,7 @@ class FelicityCoordinator(DataUpdateCoordinator):
         self.api = api
         self._history_cache: Dict[str, Dict[str, Any]] = {}
         self._history_cache_time: Dict[str, datetime] = {}
+        self.history_diagnostics: Dict[str, Dict[str, Any]] = {}
 
     async def _safe_snapshot(self, device_sn: str) -> Dict[str, Any]:
         try:
@@ -90,6 +91,7 @@ class FelicityCoordinator(DataUpdateCoordinator):
             return data if isinstance(data, dict) else {}
 
         except Exception as err:
+            self.history_diagnostics[str(device_sn)] = {"status": "error", "error": str(err)[:600], "endpoint": "chart_storageRealtimeData_mate"}
             _LOGGER.warning("History chart failed for %s: %s", device_sn, err)
             return {}
 
@@ -286,6 +288,10 @@ class FelicityCoordinator(DataUpdateCoordinator):
 
         raw_history = await self._safe_history_chart(device_sn, fields)
         parsed = self._extract_history_last_values(raw_history, kind)
+        if raw_history:
+            self.history_diagnostics[str(device_sn)] = {"status": "data" if parsed else "empty", "response_keys": list(raw_history.keys())[:30], "point_count": parsed.get(f"{kind}HistoryPointCount", 0), "fields": fields, "endpoint": "chart_storageRealtimeData_mate"}
+        elif str(device_sn) not in self.history_diagnostics:
+            self.history_diagnostics[str(device_sn)] = {"status": "empty", "endpoint": "chart_storageRealtimeData_mate"}
         self._history_cache[cache_key] = parsed
         self._history_cache_time[cache_key] = now
         return parsed

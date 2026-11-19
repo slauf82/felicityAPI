@@ -36,18 +36,12 @@ class FelicityAuthError(FelicityApiError):
 
 
 class FelicityAPI:
-    def __init__(self, session, username: str, password: str):
+    def __init__(self, session, username: str, password: str, ssl_context: ssl.SSLContext | None = None):
         self._session = session
         self._username = username
         self._password = password
         self._token: str | None = None
-        self._ssl = self._create_ssl_context()
-
-    def _create_ssl_context(self):
-        context = ssl.create_default_context()
-        context.check_hostname = False
-        context.verify_mode = ssl.CERT_NONE
-        return context
+        self._ssl = ssl_context
 
     def _encrypt_password(self, password: str, public_key: str = PUBLIC_KEY) -> str:
         key = RSA.import_key(base64.b64decode(public_key))
@@ -293,9 +287,9 @@ class FelicityAPI:
             if isinstance(data, dict) and data.get("code") in (None, 200):
                 return data
 
-            errors.append(str(data))
+            errors.append(f"code={data.get('code')} message={str(data.get('message', ''))[:120]}")
 
-        raise FelicityApiError("History chart endpoint failed: " + " | ".join(errors))
+        raise FelicityApiError("History chart endpoint failed: " + " | ".join(errors[-4:]))
 
     async def get_warnings(self) -> dict[str, Any]:
         """Fetch device warnings using the historic Felicity typo and the corrected endpoint.
