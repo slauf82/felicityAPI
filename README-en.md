@@ -133,6 +133,47 @@ Community testing is still needed for:
 
 ---
 
+## Reporting Issues and Providing Diagnostic Data
+
+Have you encountered a bug, is your Felicity Solar device not fully recognized, or are some sensors missing?
+
+You can help improve the Felicity API integration by sharing your feedback and diagnostic information!
+
+### How to Download Diagnostic Data
+
+Starting with **v1.4.5**, the integration supports Home Assistant's anonymized diagnostic export.
+
+1. Open **Settings → Devices & Services → Integrations** in Home Assistant.
+2. Select **Felicity API**.
+3. Open the menu and choose **Download diagnostics**.
+4. Review the downloaded JSON file to ensure it contains no personal or sensitive information.
+5. Create a [GitHub issue](https://github.com/slauf82/felicityAPI/issues) or add a comment to an existing issue and attach the diagnostic file.
+
+### What Should Your Issue Report Include?
+
+- Your Felicity Solar device model
+- Installed Felicity API integration version
+- A description of the problem or requested enhancement
+- Affected sensors or features
+- Optional: An anonymized diagnostic JSON file
+
+### Privacy and Data Protection
+
+- Diagnostic data is **not automatically transmitted** to the developer or any external server.
+- The diagnostic export is generated only when explicitly requested by the user.
+- Sensitive information such as credentials, access tokens, device serial numbers, and raw measurements is excluded from the export.
+- Always review diagnostic files before sharing them publicly.
+
+### Help Improve Device Compatibility
+
+Diagnostic reports are particularly valuable for supporting additional Felicity Solar models that the developer cannot test directly.
+
+By sharing anonymized diagnostic data, you help identify missing API fields, improve device detection, and expand sensor compatibility.
+
+**Thank you for your support and contributions!** Your feedback helps make the Felicity API integration better for everyone.
+
+---
+
 ## Installation
 
 ### Manual Installation
