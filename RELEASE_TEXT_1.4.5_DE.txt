@@ -1,0 +1,1 @@
+Anonymisierter Home-Assistant-Diagnoseexport für bessere Geräteerkennung, History-Fehleranalyse und Unterstützung weiterer Felicity-Modelle.
