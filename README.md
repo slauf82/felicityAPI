@@ -64,9 +64,12 @@ AI-generated or AI-assisted products based on this project must also remain unde
 
 This project is not affiliated with Felicity Solar and is not officially supported.
 
-## v1.4.2
+## v1.4.5
 
-- Fixed History/Chart parsing for Felicity web history responses.
-- Uses `xaxis` as the chart timeline and the latest non-empty data point as sensor state.
-- Added robust fallback parsing for table-style `dataList` history responses.
-
+- Added anonymized diagnostics export using Home Assistant's “Download diagnostics” feature.
+- Includes structured information about detected device types, API/sensor fields, and history diagnostics.
+- No automatic transmission of diagnostic data; please review the JSON file before sharing.
+- Expanded multi-device detection and model recognition, including M1-1600 and IVAM (additional real-world testing required).
+- Improved SSL initialization and history request error diagnostics.
+- Retains v1.4.2 History/Chart parsing with `xaxis` timeline and `dataList` fallback.
+- The integration remains read-only; write operations are not yet supported.
